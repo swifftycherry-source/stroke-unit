@@ -1,0 +1,1394 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stroke Unit รพ.นครปฐม</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&family=Prompt:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root {
+  --primary: #0A2463; --primary2: #1B4FD8; --accent: #00C9A7; --accent2: #FFD166;
+  --red: #EF233C; --orange: #FB8500; --green: #06D6A0; --purple: #7B2FBE;
+  --teal: #0096C7; --pink: #F72585; --yellow: #FFD166;
+  --bg: #F0F4FF; --card: #FFFFFF; --dark: #0A2463; --text: #1a1a2e; --text2: #5a6a8a;
+  --border: #dbe4ff; --shadow: 0 4px 20px rgba(10,36,99,0.10);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Sarabun', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+/* HEADER */
+.header {
+  background: linear-gradient(135deg, #0A2463 0%, #1B4FD8 60%, #0096C7 100%);
+  color: white; padding: 0; position: sticky; top: 0; z-index: 100;
+  box-shadow: 0 4px 24px rgba(10,36,99,0.25);
+}
+.hinner { padding: 14px 20px 0; }
+.htop { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
+.hlogo {
+  width: 52px; height: 52px; border-radius: 14px;
+  background: rgba(255,255,255,0.18); display: flex; align-items: center;
+  justify-content: center; font-size: 26px; flex-shrink: 0;
+  border: 2px solid rgba(255,255,255,0.3); backdrop-filter: blur(8px);
+}
+.htitle h1 { font-family: 'Prompt', sans-serif; font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
+.htitle p { font-size: 11px; opacity: 0.78; margin-top: 2px; }
+.hright { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+.fybadge {
+  background: rgba(255,255,255,0.18); border: 1.5px solid rgba(255,255,255,0.35);
+  border-radius: 20px; padding: 6px 14px; font-size: 12px; font-weight: 700;
+  cursor: pointer; transition: all 0.2s; backdrop-filter: blur(8px);
+}
+.fybadge:hover { background: rgba(255,255,255,0.3); }
+.sheet-btn {
+  background: #1E8E3E; border: none; border-radius: 20px; padding: 6px 14px;
+  font-size: 11px; font-weight: 600; color: white; cursor: pointer; transition: all 0.2s;
+  display: flex; align-items: center; gap: 5px;
+}
+.sheet-btn:hover { background: #166d2f; }
+.navtabs {
+  display: flex; overflow-x: auto; gap: 0; padding: 0 8px;
+  background: rgba(0,0,0,0.18); scrollbar-width: none;
+}
+.navtabs::-webkit-scrollbar { display: none; }
+.ntab {
+  padding: 10px 16px; font-size: 11.5px; font-weight: 600;
+  color: rgba(255,255,255,0.68); cursor: pointer; white-space: nowrap;
+  border-bottom: 3px solid transparent; background: none;
+  border-top: none; border-left: none; border-right: none;
+  transition: all 0.2s; font-family: 'Sarabun', sans-serif; letter-spacing: 0.2px;
+}
+.ntab.active { color: white; border-bottom-color: #FFD166; }
+.ntab:hover { color: white; background: rgba(255,255,255,0.08); }
+
+/* CONTENT */
+.content { padding: 16px; max-width: 1200px; margin: 0 auto; }
+.page { display: none; animation: fadeIn 0.3s ease; }
+.page.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+/* KPI GRID */
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 14px; }
+.kpi {
+  background: var(--card); border-radius: 14px; padding: 14px 12px;
+  border-left: 5px solid; box-shadow: var(--shadow); position: relative; overflow: hidden;
+  transition: transform 0.2s;
+}
+.kpi:hover { transform: translateY(-2px); }
+.kpi::after { content: ''; position: absolute; top: -20px; right: -20px; width: 60px; height: 60px; border-radius: 50%; opacity: 0.08; }
+.kpi.blue { border-left-color: var(--primary2); } .kpi.blue::after { background: var(--primary2); } .kpi.blue .kval { color: var(--primary2); }
+.kpi.red { border-left-color: var(--red); } .kpi.red::after { background: var(--red); } .kpi.red .kval { color: var(--red); }
+.kpi.green { border-left-color: var(--green); } .kpi.green::after { background: var(--green); } .kpi.green .kval { color: #059669; }
+.kpi.orange { border-left-color: var(--orange); } .kpi.orange::after { background: var(--orange); } .kpi.orange .kval { color: var(--orange); }
+.kpi.purple { border-left-color: var(--purple); } .kpi.purple::after { background: var(--purple); } .kpi.purple .kval { color: var(--purple); }
+.kpi.teal { border-left-color: var(--teal); } .kpi.teal::after { background: var(--teal); } .kpi.teal .kval { color: var(--teal); }
+.kpi.pink { border-left-color: var(--pink); } .kpi.pink::after { background: var(--pink); } .kpi.pink .kval { color: var(--pink); }
+.kpi.yellow { border-left-color: var(--yellow); } .kpi.yellow::after { background: var(--yellow); } .kpi.yellow .kval { color: #B45309; }
+.klbl { font-size: 10.5px; color: var(--text2); margin-bottom: 4px; line-height: 1.3; }
+.kval { font-size: 28px; font-weight: 800; font-family: 'Prompt', sans-serif; line-height: 1; }
+.ksub { font-size: 10px; margin-top: 4px; color: var(--text2); }
+
+/* SECTION CARD */
+.sc {
+  background: var(--card); border-radius: 16px; padding: 16px;
+  margin-bottom: 14px; box-shadow: var(--shadow); border: 1px solid var(--border);
+}
+.stitle {
+  font-size: 14px; font-weight: 700; color: var(--primary); margin-bottom: 13px;
+  display: flex; align-items: center; gap: 8px; font-family: 'Prompt', sans-serif;
+}
+.stitle .icon { font-size: 18px; }
+.cw { position: relative; width: 100%; }
+
+/* QUARTER TABS */
+.qtabs { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+.qtab {
+  padding: 7px 16px; border-radius: 20px; font-size: 12px; font-weight: 600;
+  cursor: pointer; border: 2px solid var(--border); background: white;
+  color: var(--text2); transition: all 0.2s;
+}
+.qtab.active { background: var(--primary); color: white; border-color: var(--primary); }
+.qtab:hover { border-color: var(--primary2); color: var(--primary2); }
+
+/* FORM */
+.fgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.fg { display: flex; flex-direction: column; gap: 4px; }
+.fg.full { grid-column: 1 / -1; }
+.fg label { font-size: 11px; font-weight: 600; color: var(--text2); }
+.fg input, .fg select {
+  border: 1.5px solid var(--border); border-radius: 9px;
+  padding: 8px 11px; font-size: 13px; color: var(--text);
+  background: #F8FAFF; transition: all 0.2s; font-family: 'Sarabun', sans-serif;
+}
+.fg input:focus, .fg select:focus {
+  border-color: var(--primary2); outline: none; background: white;
+  box-shadow: 0 0 0 3px rgba(27,79,216,0.12);
+}
+.section-sep { font-size: 11px; font-weight: 700; color: var(--primary2); background: #EEF2FF; padding: 5px 10px; border-radius: 8px; margin: 12px 0 8px; grid-column: 1/-1; }
+
+.btn {
+  padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 700;
+  cursor: pointer; border: none; transition: all 0.2s; font-family: 'Sarabun', sans-serif;
+}
+.btn-p { background: var(--primary); color: white; }
+.btn-p:hover { background: var(--primary2); }
+.btn-g { background: #1E8E3E; color: white; }
+.btn-g:hover { background: #166d2f; }
+.btn-ai { background: linear-gradient(135deg, var(--purple), #9B2FC9); color: white; }
+.btn-ai:hover { filter: brightness(1.1); }
+.btn-o { background: var(--orange); color: white; }
+.btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+
+/* TABLE */
+.tbl { width: 100%; border-collapse: collapse; font-size: 12px; }
+.tbl th { background: #EEF2FF; color: var(--primary); font-weight: 700; padding: 9px 10px; text-align: left; border-bottom: 2px solid var(--border); white-space: nowrap; }
+.tbl td { padding: 8px 10px; border-bottom: 1px solid #F0F4FF; color: var(--text); }
+.tbl tr:hover td { background: #F8FAFF; }
+.bdg { padding: 2px 8px; border-radius: 12px; font-size: 10.5px; font-weight: 700; }
+.bdg-b { background: #DBEAFE; color: #1D4ED8; }
+.bdg-r { background: #FEE2E2; color: #DC2626; }
+.bdg-g { background: #D1FAE5; color: #059669; }
+.bdg-o { background: #FED7AA; color: #C2410C; }
+.bdg-p { background: #EDE9FE; color: #6D28D9; }
+
+/* DNT */
+.dntrow { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+.dntcard {
+  flex: 1; min-width: 110px; background: white; border-radius: 12px;
+  padding: 13px; border: 2px solid; text-align: center;
+  box-shadow: var(--shadow);
+}
+.dntcard.good { border-color: var(--green); }
+.dntcard.warn { border-color: var(--orange); }
+.dntcard.info { border-color: var(--teal); }
+.dntv { font-size: 30px; font-weight: 800; font-family: 'Prompt', sans-serif; }
+.dntcard.good .dntv { color: #059669; }
+.dntcard.warn .dntv { color: var(--orange); }
+.dntcard.info .dntv { color: var(--teal); }
+.dntl { font-size: 10.5px; color: var(--text2); margin-top: 2px; }
+.dntt { font-size: 9.5px; margin-top: 3px; }
+.dntcard.good .dntt { color: #059669; }
+.dntcard.warn .dntt { color: var(--orange); }
+
+/* BENCH */
+.brow { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.blbl { font-size: 11.5px; color: var(--text2); min-width: 110px; font-weight: 500; }
+.bbwrap { flex: 1; background: #EEF2FF; border-radius: 20px; height: 22px; overflow: hidden; }
+.bbar { height: 100%; border-radius: 20px; display: flex; align-items: center; justify-content: flex-end; padding-right: 9px; transition: width 1s ease; }
+.bbar span { font-size: 11px; font-weight: 700; color: white; }
+.bpct { font-size: 12px; font-weight: 700; min-width: 38px; text-align: right; }
+
+/* AI BOX */
+.aibox {
+  background: linear-gradient(135deg, #F3E8FF, #E8F4FF);
+  border-radius: 13px; padding: 15px; margin-top: 10px;
+  border: 1.5px solid #C4B5FD;
+}
+.aihdr { display: flex; align-items: center; gap: 8px; margin-bottom: 9px; }
+.aihdr strong { font-size: 13px; color: var(--purple); font-family: 'Prompt', sans-serif; }
+.aibox p { font-size: 12px; color: #374151; line-height: 1.75; white-space: pre-wrap; }
+.dots { display: flex; gap: 5px; align-items: center; }
+.dot { width: 7px; height: 7px; border-radius: 50%; background: var(--purple); animation: boun 1.2s infinite; }
+.dot:nth-child(2) { animation-delay: 0.2s; }
+.dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes boun { 0%,80%,100%{transform:scale(0.7)}40%{transform:scale(1)} }
+
+/* MONTH GRID */
+.mgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(75px, 1fr)); gap: 6px; margin-bottom: 13px; }
+.mbtn {
+  padding: 8px 4px; border-radius: 9px; font-size: 11px; text-align: center;
+  cursor: pointer; border: 1.5px solid var(--border); background: white;
+  color: var(--text2); transition: all 0.2s;
+}
+.mbtn.active { background: var(--primary); color: white; border-color: var(--primary); }
+.mbtn:hover { border-color: var(--primary2); }
+
+/* NCP */
+.nblock { background: var(--card); border-radius: 13px; border: 1px solid var(--border); margin-bottom: 11px; overflow: hidden; box-shadow: var(--shadow); }
+.nbhdr { padding: 12px 15px; display: flex; align-items: center; gap: 10px; }
+.nbnum { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+.nbhdr h3 { font-size: 12.5px; font-weight: 600; color: var(--text); line-height: 1.35; flex: 1; }
+.nbbdg { font-size: 10px; padding: 2px 8px; border-radius: 9px; font-weight: 700; white-space: nowrap; margin-left: auto; }
+.nbody { padding: 12px 15px; border-top: 1px solid #F0F4FF; }
+.nrow { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+.nrow3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+.ncol label { font-size: 9.5px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; display: block; }
+.ncol p, .ncol ul { font-size: 11.5px; color: var(--text); line-height: 1.75; }
+.ncol ul { padding-left: 14px; }
+.erow { display: flex; align-items: center; gap: 7px; padding: 5px 0; border-bottom: 1px solid #F0F4FF; }
+.erow:last-child { border-bottom: none; }
+.eind { font-size: 11.5px; flex: 1; color: var(--text); }
+.etgt { font-size: 11px; color: var(--primary2); min-width: 78px; text-align: right; font-weight: 600; }
+.emsr { font-size: 10px; padding: 2px 7px; border-radius: 9px; font-weight: 600; }
+.pdot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.slbl { font-size: 10.5px; font-weight: 700; color: var(--primary2); background: #EEF2FF; padding: 3px 8px; border-radius: 6px; display: inline-block; margin-bottom: 6px; }
+.ncptab { padding: 6px 13px; border-radius: 18px; font-size: 11.5px; font-weight: 600; cursor: pointer; border: 1.5px solid var(--border); background: white; color: var(--text2); transition: all 0.2s; }
+.ncptab.active { background: var(--primary); color: white; border-color: var(--primary); }
+.ncptabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+.ncppage { display: none; }
+.ncppage.active { display: block; }
+.cqicard { background: #F8FAFF; border-radius: 9px; padding: 11px 13px; margin-bottom: 8px; border-left: 4px solid; }
+.cqicard h4 { font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.cqicard p { font-size: 11px; color: var(--text2); line-height: 1.65; }
+
+/* MODAL */
+.modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; justify-content: center; align-items: center; }
+.modal-bg.open { display: flex; }
+.modal { background: white; border-radius: 18px; padding: 22px; width: 90%; max-width: 480px; max-height: 88vh; overflow-y: auto; }
+.modal-title { font-size: 16px; font-weight: 700; color: var(--primary); margin-bottom: 16px; font-family: 'Prompt', sans-serif; }
+.mclose { float: right; cursor: pointer; font-size: 22px; color: var(--text2); background: none; border: none; }
+
+/* SAVE MSG */
+.savemsg { display: none; margin-top: 10px; padding: 10px 14px; background: #D1FAE5; border-radius: 9px; font-size: 13px; color: #065F46; font-weight: 600; border: 1px solid #A7F3D0; }
+
+/* REFER BOX */
+.refer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+.refer-box { border-radius: 11px; padding: 12px 14px; }
+.refer-box.in { background: #EFF6FF; border: 1px solid #BFDBFE; }
+.refer-box.out { background: #FFF7ED; border: 1px solid #FED7AA; }
+.refer-title { font-size: 12px; font-weight: 700; margin-bottom: 7px; }
+.refer-box.in .refer-title { color: #1D4ED8; }
+.refer-box.out .refer-title { color: #C2410C; }
+.refer-item { font-size: 11.5px; color: var(--text2); margin-bottom: 3px; }
+.refer-item strong { color: var(--text); }
+
+/* SHEET LINK */
+.sheet-link-box {
+  display: flex; align-items: center; gap: 12px; background: #F0FDF4;
+  border-radius: 12px; padding: 14px 16px; border: 1.5px solid #86EFAC;
+  cursor: pointer; transition: all 0.2s; margin-bottom: 12px;
+}
+.sheet-link-box:hover { background: #DCFCE7; }
+.sheet-link-box .sico { font-size: 28px; }
+.sheet-link-info strong { font-size: 13px; color: #166534; }
+.sheet-link-info p { font-size: 11px; color: #374151; margin-top: 2px; }
+.sheet-link-btn { margin-left: auto; background: #16A34A; color: white; border: none; border-radius: 8px; padding: 8px 14px; font-size: 12px; font-weight: 700; cursor: pointer; }
+
+.compare-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.compare-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.fy-sel { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 14px; }
+.fy-sel label { font-size: 12.5px; font-weight: 600; color: var(--text2); }
+.fy-sel select { border: 1.5px solid var(--border); border-radius: 9px; padding: 6px 11px; font-size: 13px; font-family: 'Sarabun', sans-serif; }
+
+@media (max-width: 600px) {
+  .fgrid { grid-template-columns: 1fr; }
+  .nrow, .nrow3 { grid-template-columns: 1fr; }
+  .refer-grid { grid-template-columns: 1fr; }
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .htitle h1 { font-size: 15px; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="hinner">
+    <div class="htop">
+      <div class="hlogo">🧠</div>
+      <div class="htitle">
+        <h1>Stroke Unit รพ.นครปฐม</h1>
+        <p>ระบบบริหารจัดการข้อมูลผู้ป่วยโรคหลอดเลือดสมอง · Nakhon Pathom Hospital</p>
+      </div>
+      <div class="hright">
+        <button class="sheet-btn" onclick="openSheet()">📊 Google Sheet</button>
+        <div class="fybadge" onclick="showFYModal()">ปีงบ <span id="fybadge">69</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="navtabs">
+    <button class="ntab active" onclick="showPage('dashboard',this)">📊 Dashboard</button>
+    <button class="ntab" onclick="showPage('entry',this)">📝 บันทึกข้อมูล</button>
+    <button class="ntab" onclick="showPage('monthly',this)">📅 รายเดือน</button>
+    <button class="ntab" onclick="showPage('quarterly',this)">📆 ไตรมาส</button>
+    <button class="ntab" onclick="showPage('mt',this)">🔬 Mech. Thrombectomy</button>
+    <button class="ntab" onclick="showPage('mortality',this)">💔 อัตราเสียชีวิต</button>
+    <button class="ntab" onclick="showPage('ncp',this)">📋 แผนการพยาบาล</button>
+    <button class="ntab" onclick="showPage('ai',this)">🤖 AI วิเคราะห์</button>
+    <button class="ntab" onclick="showPage('sheet',this)">🔗 Google Sheet</button>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- ===== DASHBOARD ===== -->
+<div id="page-dashboard" class="page active">
+  <div class="fy-sel">
+    <label>ปีงบประมาณ:</label>
+    <select id="dash-fy" onchange="updateDash()">
+      <option value="67">2567</option><option value="68">2568</option><option value="69" selected>2569</option>
+    </select>
+    <label style="margin-left:8px">ไตรมาส:</label>
+    <select id="dash-q" onchange="updateDash()">
+      <option value="all">ทั้งหมด</option>
+      <option value="1">Q1 (ต.ค.–ธ.ค.)</option>
+      <option value="2">Q2 (ม.ค.–มี.ค.)</option>
+      <option value="3">Q3 (เม.ย.–มิ.ย.)</option>
+      <option value="4">Q4 (ก.ค.–ก.ย.)</option>
+    </select>
+  </div>
+
+  <div class="kpi-grid" id="kpi-grid">
+    <div class="kpi blue"><div class="klbl">ผู้ป่วยทั้งหมด</div><div class="kval" id="k-total">248</div><div class="ksub">ราย ปีงบ 69</div></div>
+    <div class="kpi orange"><div class="klbl">Ischemic Stroke</div><div class="kval" id="k-isch">186</div><div class="ksub">74.9%</div></div>
+    <div class="kpi red"><div class="klbl">Hemorrhagic Stroke</div><div class="kval" id="k-hemo">62</div><div class="ksub">25.1%</div></div>
+    <div class="kpi green"><div class="klbl">ได้รับ rt-PA</div><div class="kval" id="k-rtpa">54</div><div class="ksub">29.0% ของ Ischemic</div></div>
+    <div class="kpi purple"><div class="klbl">เข้าระบบ SFT</div><div class="kval" id="k-sft">198</div><div class="ksub">79.8%</div></div>
+    <div class="kpi teal"><div class="klbl">SFT In-hospital</div><div class="kval" id="k-sft-inh">42</div><div class="ksub">in-hospital ราย</div></div>
+    <div class="kpi pink"><div class="klbl">เสียชีวิตรวม</div><div class="kval" id="k-death">22</div><div class="ksub">อัตรา 8.9%</div></div>
+    <div class="kpi yellow"><div class="klbl">rt-PA เสียชีวิต</div><div class="kval" id="k-rtpa-d">3</div><div class="ksub">5.6% ของ rt-PA</div></div>
+  </div>
+
+  <div class="sc">
+    <div class="stitle"><span class="icon">⏱️</span> Door-to-Needle Time (DNT)</div>
+    <div class="dntrow">
+      <div class="dntcard info"><div class="dntv" id="d-avg">47</div><div class="dntl">นาที เฉลี่ย DNT</div><div class="dntt" style="color:var(--teal)">เป้า &lt;60 นาที</div></div>
+      <div class="dntcard good"><div class="dntv" id="d-60">78%</div><div class="dntl">DNT &lt;60 นาที</div><div class="dntt">✓ ผ่านเกณฑ์</div></div>
+      <div class="dntcard warn"><div class="dntv" id="d-45">42%</div><div class="dntl">DNT &lt;45 นาที</div><div class="dntt">เป้า &gt;50%</div></div>
+      <div class="dntcard info"><div class="dntv" id="d-inh-avg">38</div><div class="dntl">นาที DNT In-hos</div><div class="dntt" style="color:var(--teal)">In-hospital only</div></div>
+    </div>
+    <div class="cw" style="height:180px"><canvas id="dntChart" role="img" aria-label="กราฟ DNT รายเดือน">DNT รายเดือน</canvas></div>
+  </div>
+
+  <div class="sc">
+    <div class="stitle"><span class="icon">📊</span> เปรียบเทียบ เขต 5 / สถาบันประสาท</div>
+    <div class="brow"><div class="blbl">รพ.นครปฐม</div><div class="bbwrap"><div class="bbar" style="width:78%;background:#1B4FD8"><span>78%</span></div></div><div class="bpct" style="color:#1B4FD8">78%</div></div>
+    <div class="brow"><div class="blbl">เขต 5 เฉลี่ย</div><div class="bbwrap"><div class="bbar" style="width:65%;background:#FB8500"><span>65%</span></div></div><div class="bpct" style="color:#FB8500">65%</div></div>
+    <div class="brow"><div class="blbl">สถาบันประสาท</div><div class="bbwrap"><div class="bbar" style="width:92%;background:#06D6A0"><span>92%</span></div></div><div class="bpct" style="color:#059669">92%</div></div>
+    <p style="font-size:10.5px;color:var(--text2);margin-top:8px">* DNT &lt;60 นาที | เขต 5 = ค่าเฉลี่ยโรงพยาบาลในเขตสุขภาพที่ 5</p>
+    <div class="cw" style="height:220px;margin-top:12px"><canvas id="radarChart" role="img" aria-label="เปรียบเทียบ Radar">เปรียบเทียบ</canvas></div>
+  </div>
+
+  <div class="sc">
+    <div class="stitle"><span class="icon">📈</span> แนวโน้มผู้ป่วยรายเดือน ปีงบ 69</div>
+    <div class="cw" style="height:240px"><canvas id="trendChart" role="img" aria-label="แนวโน้ม">แนวโน้ม</canvas></div>
+  </div>
+
+  <div class="sc">
+    <div class="stitle"><span class="icon">🚑</span> Refer In / Refer Out</div>
+    <div class="refer-grid">
+      <div class="refer-box in">
+        <div class="refer-title">↘ Refer In</div>
+        <div class="refer-item">Ischemic: <strong id="ri-isch">24</strong> ราย</div>
+        <div class="refer-item">Hemorrhagic: <strong id="ri-hemo">8</strong> ราย</div>
+        <div class="refer-item">รวม: <strong>32</strong> ราย</div>
+      </div>
+      <div class="refer-box out">
+        <div class="refer-title">↗ Refer Out</div>
+        <div class="refer-item">Ischemic: <strong id="ro-isch">12</strong> ราย</div>
+        <div class="refer-item">Hemorrhagic: <strong id="ro-hemo">6</strong> ราย</div>
+        <div class="refer-item">รวม: <strong>18</strong> ราย</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ENTRY ===== -->
+<div id="page-entry" class="page">
+  <div class="sc">
+    <div class="stitle"><span class="icon">📝</span> บันทึกข้อมูลประจำเดือน</div>
+    <div class="fgrid">
+      <div class="fg"><label>ปีงบประมาณ</label>
+        <select id="e-fy">
+          <option>2567</option><option>2568</option><option selected>2569</option>
+          <option>2570</option><option>2571</option><option>2572</option><option>2573</option>
+        </select>
+      </div>
+      <div class="fg"><label>เดือน</label>
+        <select id="e-month">
+          <option value="10">ตุลาคม</option><option value="11">พฤศจิกายน</option>
+          <option value="12">ธันวาคม</option><option value="1">มกราคม</option>
+          <option value="2">กุมภาพันธ์</option><option value="3">มีนาคม</option>
+          <option value="4">เมษายน</option><option value="5">พฤษภาคม</option>
+          <option value="6">มิถุนายน</option><option value="7">กรกฎาคม</option>
+          <option value="8">สิงหาคม</option><option value="9">กันยายน</option>
+        </select>
+      </div>
+
+      <div class="section-sep">📌 ข้อมูลผู้ป่วย</div>
+      <div class="fg"><label>ผู้ป่วยทั้งหมด (ราย)</label><input type="number" id="e-total" placeholder="0" min="0"></div>
+      <div class="fg"><label>Ischemic Stroke (ราย)</label><input type="number" id="e-isch" placeholder="0" min="0"></div>
+      <div class="fg"><label>Hemorrhagic Stroke (ราย)</label><input type="number" id="e-hemo" placeholder="0" min="0"></div>
+      <div class="fg"><label>เข้าระบบ SFT (ราย)</label><input type="number" id="e-sft" placeholder="0" min="0"></div>
+      <div class="fg"><label>SFT In-hospital (ราย)</label><input type="number" id="e-sft-inh" placeholder="0" min="0"></div>
+      <div class="fg"><label>ได้รับ rt-PA (ราย)</label><input type="number" id="e-rtpa" placeholder="0" min="0"></div>
+      <div class="fg"><label>In-hospital ได้ยา rt-PA (ราย)</label><input type="number" id="e-rtpa-inh" placeholder="0" min="0"></div>
+
+      <div class="section-sep">💔 เสียชีวิต</div>
+      <div class="fg"><label>เสียชีวิต Ischemic (ราย)</label><input type="number" id="e-d-isch" placeholder="0" min="0"></div>
+      <div class="fg"><label>เสียชีวิต Hemorrhagic (ราย)</label><input type="number" id="e-d-hemo" placeholder="0" min="0"></div>
+      <div class="fg"><label>rt-PA เสียชีวิต (ราย)</label><input type="number" id="e-d-rtpa" placeholder="0" min="0"></div>
+
+      <div class="section-sep">🚑 Refer</div>
+      <div class="fg"><label>Refer In — Ischemic (ราย)</label><input type="number" id="e-ri-isch" placeholder="0" min="0"></div>
+      <div class="fg"><label>Refer In — Hemorrhagic (ราย)</label><input type="number" id="e-ri-hemo" placeholder="0" min="0"></div>
+      <div class="fg"><label>Refer Out — Ischemic (ราย)</label><input type="number" id="e-ro-isch" placeholder="0" min="0"></div>
+      <div class="fg"><label>Refer Out — Hemorrhagic (ราย)</label><input type="number" id="e-ro-hemo" placeholder="0" min="0"></div>
+
+      <div class="section-sep">⏱️ DNT</div>
+      <div class="fg"><label>DNT เฉลี่ย (นาที)</label><input type="number" id="e-dnt" placeholder="0" min="0"></div>
+      <div class="fg"><label>DNT &lt;60 นาที (ราย)</label><input type="number" id="e-dnt60" placeholder="0" min="0"></div>
+      <div class="fg"><label>DNT &lt;45 นาที (ราย)</label><input type="number" id="e-dnt45" placeholder="0" min="0"></div>
+      <div class="fg"><label>DNT เฉลี่ย In-hospital (นาที)</label><input type="number" id="e-dnt-inh" placeholder="0" min="0"></div>
+
+      <div class="section-sep">🔬 Mechanical Thrombectomy</div>
+      <div class="fg"><label>MT ติดต่อ (ราย)</label><input type="number" id="e-mt-c" placeholder="0" min="0"></div>
+      <div class="fg"><label>MT ได้ไป (ราย)</label><input type="number" id="e-mt-g" placeholder="0" min="0"></div>
+      <div class="fg"><label>MT ได้ทำ (ราย)</label><input type="number" id="e-mt-d" placeholder="0" min="0"></div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-p" onclick="saveEntry()">💾 บันทึกข้อมูล</button>
+      <button class="btn btn-g" onclick="syncSheet()">📊 ส่ง Google Sheet</button>
+      <button class="btn btn-ai" onclick="aiAnalEntry()">🤖 AI วิเคราะห์เดือนนี้</button>
+    </div>
+    <div class="savemsg" id="savemsg">✅ บันทึกข้อมูลสำเร็จแล้ว!</div>
+    <div class="aibox" id="entry-aibox" style="display:none">
+      <div class="aihdr"><span style="font-size:18px">🤖</span><strong id="entry-ai-title">AI วิเคราะห์</strong></div>
+      <div class="dots" id="entry-ai-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+      <p id="entry-ai-text" style="display:none"></p>
+    </div>
+  </div>
+
+  <div class="sc">
+    <div class="stitle"><span class="icon">📋</span> ข้อมูลที่บันทึกแล้ว (ปีงบ 69)</div>
+    <div style="overflow-x:auto">
+      <table class="tbl">
+        <thead><tr>
+          <th>เดือน</th><th>รวม</th><th>Ischemic</th><th>Hemo</th>
+          <th>rt-PA</th><th>SFT</th><th>SFT In-hos</th><th>In-hos rt-PA</th>
+          <th>เสียชีวิต</th><th>DNT เฉลี่ย</th><th>DNT In-hos</th>
+        </tr></thead>
+        <tbody id="etbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MONTHLY ===== -->
+<div id="page-monthly" class="page">
+  <div class="sc">
+    <div class="stitle"><span class="icon">📅</span> รายงานรายเดือน</div>
+    <div class="fy-sel">
+      <label>ปีงบประมาณ:</label>
+      <select id="m-fy" onchange="initMonthly()">
+        <option value="67">2567</option><option value="68">2568</option><option value="69" selected>2569</option>
+      </select>
+    </div>
+    <div class="mgrid" id="mgrid"></div>
+    <div class="cw" style="height:260px"><canvas id="monthlyChart" role="img" aria-label="รายเดือน">รายเดือน</canvas></div>
+  </div>
+  <div class="sc">
+    <div class="stitle"><span class="icon">⏱️</span> DNT รายเดือน (เสียชีวิต + DNT)</div>
+    <div class="cw" style="height:200px"><canvas id="deathMonthChart" role="img" aria-label="เสียชีวิตรายเดือน">เสียชีวิต</canvas></div>
+  </div>
+  <div class="sc">
+    <div class="stitle"><span class="icon">⏱️</span> DNT &lt;60 / &lt;45 นาที รายเดือน</div>
+    <div class="cw" style="height:200px"><canvas id="dntMonthChart" role="img" aria-label="DNT รายเดือน">DNT</canvas></div>
+  </div>
+</div>
+
+<!-- ===== QUARTERLY ===== -->
+<div id="page-quarterly" class="page">
+  <div class="sc">
+    <div class="stitle"><span class="icon">📆</span> รายงานรายไตรมาส</div>
+    <div class="qtabs">
+      <button class="qtab active" onclick="selQ(1,this)">Q1 ต.ค.–ธ.ค.</button>
+      <button class="qtab" onclick="selQ(2,this)">Q2 ม.ค.–มี.ค.</button>
+      <button class="qtab" onclick="selQ(3,this)">Q3 เม.ย.–มิ.ย.</button>
+      <button class="qtab" onclick="selQ(4,this)">Q4 ก.ค.–ก.ย.</button>
+    </div>
+    <div class="kpi-grid" id="qkpi"></div>
+    <div class="cw" style="height:240px"><canvas id="qChart" role="img" aria-label="ไตรมาส">ไตรมาส</canvas></div>
+  </div>
+  <div class="sc">
+    <div class="stitle"><span class="icon">📊</span> เปรียบเทียบทุกไตรมาส</div>
+    <div class="cw" style="height:260px"><canvas id="qCompChart" role="img" aria-label="เปรียบไตรมาส">เปรียบ</canvas></div>
+  </div>
+</div>
+
+<!-- ===== MT ===== -->
+<div id="page-mt" class="page">
+  <div class="sc">
+    <div class="stitle"><span class="icon">🔬</span> Mechanical Thrombectomy</div>
+    <div class="kpi-grid">
+      <div class="kpi blue"><div class="klbl">ติดต่อทั้งหมด</div><div class="kval">28</div><div class="ksub">ราย</div></div>
+      <div class="kpi orange"><div class="klbl">ได้ไป</div><div class="kval">22</div><div class="ksub">78.6%</div></div>
+      <div class="kpi green"><div class="klbl">ได้ทำจริง</div><div class="kval">18</div><div class="ksub">81.8% ของที่ไป</div></div>
+      <div class="kpi red"><div class="klbl">ไม่สำเร็จ</div><div class="kval">10</div><div class="ksub">35.7%</div></div>
+    </div>
+    <div class="cw" style="height:260px"><canvas id="mtChart" role="img" aria-label="MT">MT</canvas></div>
+  </div>
+  <div class="sc">
+    <div class="stitle"><span class="icon">🤖</span> AI วิเคราะห์ Mechanical Thrombectomy</div>
+    <button class="btn btn-ai" onclick="aiMT()">วิเคราะห์ MT ↗</button>
+    <div class="aibox" id="mt-aibox" style="display:none;margin-top:12px">
+      <div class="aihdr"><span style="font-size:18px">🤖</span><strong>AI วิเคราะห์ MT</strong></div>
+      <div class="dots" id="mt-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+      <p id="mt-text" style="display:none"></p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MORTALITY ===== -->
+<div id="page-mortality" class="page">
+  <div class="sc">
+    <div class="stitle"><span class="icon">💔</span> อัตราการเสียชีวิต</div>
+    <div class="kpi-grid">
+      <div class="kpi red"><div class="klbl">เสียชีวิตรวม</div><div class="kval">22</div><div class="ksub">อัตรา 8.9%</div></div>
+      <div class="kpi orange"><div class="klbl">Ischemic เสียชีวิต</div><div class="kval">10</div><div class="ksub">5.4%</div></div>
+      <div class="kpi pink"><div class="klbl">Hemorrhagic เสียชีวิต</div><div class="kval">12</div><div class="ksub">19.4%</div></div>
+      <div class="kpi purple"><div class="klbl">rt-PA เสียชีวิต</div><div class="kval">3</div><div class="ksub">5.6% ของ rt-PA</div></div>
+    </div>
+    <div class="cw" style="height:260px"><canvas id="mortChart" role="img" aria-label="อัตราเสียชีวิต">เสียชีวิต</canvas></div>
+  </div>
+  <div class="sc">
+    <div class="stitle"><span class="icon">📊</span> เปรียบเทียบอัตราเสียชีวิตกับมาตรฐาน</div>
+    <div class="compare-row"><div class="compare-dot" style="background:#1B4FD8"></div><div style="min-width:120px;font-size:12px;color:var(--text2)">รพ.นครปฐม</div><div style="font-size:13px;font-weight:700">8.9%</div></div>
+    <div class="compare-row"><div class="compare-dot" style="background:#FB8500"></div><div style="min-width:120px;font-size:12px;color:var(--text2)">เขต 5 เฉลี่ย</div><div style="font-size:13px;font-weight:700">10.2%</div></div>
+    <div class="compare-row"><div class="compare-dot" style="background:#06D6A0"></div><div style="min-width:120px;font-size:12px;color:var(--text2)">สถาบันประสาท</div><div style="font-size:13px;font-weight:700">7.1%</div></div>
+    <div class="cw" style="height:220px;margin-top:12px"><canvas id="deathCompChart" role="img" aria-label="เปรียบเทียบเสียชีวิต">เปรียบ</canvas></div>
+  </div>
+</div>
+
+<!-- ===== NCP ===== -->
+<div id="page-ncp" class="page">
+  <div class="sc">
+    <div style="background:linear-gradient(135deg,#0A2463,#1B4FD8);color:white;border-radius:12px;padding:16px 18px;margin-bottom:14px">
+      <div style="font-size:16px;font-weight:800;font-family:'Prompt',sans-serif;margin-bottom:4px">แผนการพยาบาล Stroke Unit</div>
+      <div style="font-size:11px;opacity:.85">Nursing Care Plan — โรงพยาบาลนครปฐม | อ้างอิงข้อมูลปีงบประมาณ 2569</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px">
+        <span style="background:rgba(255,255,255,.18);border-radius:15px;padding:3px 10px;font-size:10.5px">Ischemic Stroke</span>
+        <span style="background:rgba(255,255,255,.18);border-radius:15px;padding:3px 10px;font-size:10.5px">Hemorrhagic Stroke</span>
+        <span style="background:rgba(255,255,255,.18);border-radius:15px;padding:3px 10px;font-size:10.5px">Post rt-PA</span>
+        <span style="background:rgba(255,255,255,.18);border-radius:15px;padding:3px 10px;font-size:10.5px">DNT &lt;60 นาที</span>
+        <span style="background:rgba(255,255,255,.18);border-radius:15px;padding:3px 10px;font-size:10.5px">Mech. Thrombectomy</span>
+      </div>
+    </div>
+    <div class="ncptabs">
+      <button class="ncptab active" onclick="showNCP('ischemic',this)">Ischemic Stroke</button>
+      <button class="ncptab" onclick="showNCP('hemorrhagic',this)">Hemorrhagic Stroke</button>
+      <button class="ncptab" onclick="showNCP('rtpa',this)">หลัง rt-PA</button>
+      <button class="ncptab" onclick="showNCP('dnt',this)">ลด DNT</button>
+      <button class="ncptab" onclick="showNCP('cqi',this)">CQI / ต่อยอด</button>
+    </div>
+
+    <div id="ncp-ischemic" class="ncppage active">
+      <div class="nblock">
+        <div class="nbhdr" style="border-bottom:1px solid #EEF2FF">
+          <div class="nbnum" style="background:#DBEAFE;color:#1D4ED8">1</div>
+          <h3>เนื้อสมองขาดเลือด เสี่ยงต่อสมองบวมและความพิการถาวร</h3>
+          <span class="nbbdg" style="background:#FEE2E2;color:#B91C1C">สูง</span>
+        </div>
+        <div class="nbody">
+          <div class="slbl">ข้อมูลสนับสนุน</div>
+          <div class="nrow" style="margin-top:6px">
+            <div class="ncol"><label>อัตนัย</label><ul><li>ปวดศีรษะ มึนงง อ่อนแรงซีกใดซีกหนึ่ง</li><li>พูดไม่ชัด กลืนลำบาก</li></ul></div>
+            <div class="ncol"><label>ภาววิสัย</label><ul><li>NIHSS ≥ 6 คะแนน</li><li>CT brain: ischemic lesion</li><li>BP สูง SpO₂ ต่ำ</li></ul></div>
+          </div>
+          <div class="slbl">เป้าหมาย</div>
+          <div class="nrow" style="margin-top:6px">
+            <div class="ncol"><p>ระยะสั้น 24–48 ชม.: ไม่มีสมองบวมเพิ่ม ระดับความรู้สึกตัวคงที่</p></div>
+            <div class="ncol"><p>ระยะยาว: NIHSS ลดลง ≥ 4 คะแนนใน 7 วัน ไม่เกิด secondary injury</p></div>
+          </div>
+          <div class="slbl">กิจกรรมการพยาบาล</div>
+          <ul style="font-size:12px;line-height:1.8;color:var(--text);padding-left:16px;margin:6px 0 10px">
+            <li>ประเมิน neuro signs ทุก 1 ชม. ใน 24 ชม. แรก (GCS, pupil, motor)</li>
+            <li>จัดท่านอน HOB 30° เพื่อลด ICP</li>
+            <li>ควบคุม BP: SBP &lt;180 mmHg (ก่อน rt-PA) / &lt;140 mmHg (หลัง rt-PA)</li>
+            <li>ดูแลออกซิเจน SpO₂ &gt;94% หลีกเลี่ยง hyperthermia</li>
+            <li>Monitor blood glucose เป้า 140–180 mg/dL</li>
+            <li>ประเมิน swallowing ก่อนให้อาหาร/น้ำทุกราย</li>
+          </ul>
+          <div class="slbl">ประเมินผล</div>
+          <div class="erow" style="margin-top:6px"><div class="pdot" style="background:#1B4FD8"></div><div class="eind">GCS คงที่หรือดีขึ้น</div><div class="etgt">≥ 14 คะแนน</div><div class="emsr" style="background:#D1FAE5;color:#065F46">ทุก 1 ชม.</div></div>
+          <div class="erow"><div class="pdot" style="background:#1B4FD8"></div><div class="eind">NIHSS score</div><div class="etgt">ลดลง ≥ 4</div><div class="emsr" style="background:#DBEAFE;color:#1D4ED8">วันที่ 7</div></div>
+          <div class="erow"><div class="pdot" style="background:#1B4FD8"></div><div class="eind">SpO₂</div><div class="etgt">&gt; 94%</div><div class="emsr" style="background:#D1FAE5;color:#065F46">ต่อเนื่อง</div></div>
+        </div>
+      </div>
+      <div class="nblock">
+        <div class="nbhdr" style="border-bottom:1px solid #EEF2FF">
+          <div class="nbnum" style="background:#DBEAFE;color:#1D4ED8">2</div>
+          <h3>เสี่ยงภาวะแทรกซ้อนจากนอนติดเตียง (DVT แผลกดทับ ปอดอักเสบ)</h3>
+          <span class="nbbdg" style="background:#FED7AA;color:#C2410C">ปานกลาง</span>
+        </div>
+        <div class="nbody">
+          <div class="nrow">
+            <div class="ncol"><label>กิจกรรม</label><ul><li>Passive ROM ทุก 2 ชม.</li><li>เปลี่ยนท่าทุก 2 ชม. บันทึก turning chart</li><li>ใช้ pressure mattress / heel protector</li><li>Braden scale ทุกวัน</li><li>Compression stocking / pneumatic</li></ul></div>
+            <div class="ncol"><label>เป้าหมาย</label><ul><li>ไม่มีแผลกดทับ Braden ≥ 17</li><li>ไม่มีอาการ DVT</li><li>Breath sound clear ทั้ง 2 ข้าง</li></ul></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="ncp-hemorrhagic" class="ncppage">
+      <div class="nblock">
+        <div class="nbhdr" style="border-bottom:1px solid #FEE2E2">
+          <div class="nbnum" style="background:#FEE2E2;color:#B91C1C">1</div>
+          <h3>เลือดออกในสมอง เสี่ยงต่อ Raised ICP</h3>
+          <span class="nbbdg" style="background:#FEE2E2;color:#B91C1C">วิกฤต</span>
+        </div>
+        <div class="nbody">
+          <div class="slbl">กิจกรรมเร่งด่วน</div>
+          <ul style="font-size:12px;line-height:1.8;color:var(--text);padding-left:16px;margin:6px 0 10px">
+            <li>Neuro signs ทุก 15–30 นาทีใน 6 ชม. แรก</li>
+            <li>HOB 30–45° หลีกเลี่ยงก้มศีรษะ</li>
+            <li>ลด BP ช้า ๆ เป้า SBP &lt;140 mmHg ใน 1 ชม.</li>
+            <li>ห้าม anticoagulant / aspirin</li>
+            <li>เตรียม surgical intervention (Craniotomy/EVD)</li>
+            <li>Monitor electrolyte coagulogram CBC</li>
+            <li>Foley catheter วัด urine output ทุก 1 ชม.</li>
+          </ul>
+          <div class="erow"><div class="pdot" style="background:#DC2626"></div><div class="eind">GCS ไม่ลดลง</div><div class="etgt">คงที่</div><div class="emsr" style="background:#FEE2E2;color:#B91C1C">ทุก 15 นาที</div></div>
+          <div class="erow"><div class="pdot" style="background:#DC2626"></div><div class="eind">SBP หลังรักษา</div><div class="etgt">&lt;140 mmHg</div><div class="emsr" style="background:#FED7AA;color:#C2410C">ใน 1 ชม.</div></div>
+          <div class="erow"><div class="pdot" style="background:#DC2626"></div><div class="eind">Urine output</div><div class="etgt">&gt;0.5 mL/kg/hr</div><div class="emsr" style="background:#DBEAFE;color:#1D4ED8">ทุก 1 ชม.</div></div>
+          <div class="erow"><div class="pdot" style="background:#DC2626"></div><div class="eind">เป้าหมายอัตราเสียชีวิต Hemo</div><div class="etgt">&lt;15%</div><div class="emsr" style="background:#FEE2E2;color:#B91C1C">ปัจจุบัน 19.4%</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="ncp-rtpa" class="ncppage">
+      <div class="nblock">
+        <div class="nbhdr" style="border-bottom:1px solid #EDE9FE">
+          <div class="nbnum" style="background:#EDE9FE;color:#6D28D9">1</div>
+          <h3>เสี่ยงต่อ Symptomatic ICH หลังได้รับ rt-PA</h3>
+          <span class="nbbdg" style="background:#FEE2E2;color:#B91C1C">สูงมาก</span>
+        </div>
+        <div class="nbody">
+          <div class="slbl">Protocol เฝ้าระวัง 24 ชม. แรก</div>
+          <ul style="font-size:12px;line-height:1.8;color:var(--text);padding-left:16px;margin:6px 0 10px">
+            <li>Neuro check ทุก <strong style="color:#DC2626">15 นาที × 2 ชม. → 30 นาที × 6 ชม. → 1 ชม. × 16 ชม.</strong></li>
+            <li>BP ทุก 15 นาทีใน 2 ชม. แรก เป้า SBP &lt;180 DBP &lt;105 mmHg</li>
+            <li>ห้าม anticoagulant antiplatelet 24 ชม.</li>
+            <li>ห้าม NG tube Foley arterial line ใน 30 นาทีหลัง rt-PA</li>
+            <li>เฝ้าระวัง angioedema oral bleeding hematuria</li>
+          </ul>
+          <div class="erow"><div class="pdot" style="background:#6D28D9"></div><div class="eind">ไม่เกิด sICH</div><div class="etgt">0 ราย</div><div class="emsr" style="background:#EDE9FE;color:#6D28D9">24 ชม.</div></div>
+          <div class="erow"><div class="pdot" style="background:#6D28D9"></div><div class="eind">อัตราเสียชีวิต rt-PA</div><div class="etgt">&lt;5%</div><div class="emsr" style="background:#D1FAE5;color:#065F46">รายเดือน</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="ncp-dnt" class="ncppage">
+      <div class="nblock">
+        <div class="nbhdr" style="border-bottom:1px solid #D1FAE5">
+          <div class="nbnum" style="background:#D1FAE5;color:#065F46">1</div>
+          <h3>แผนลด DNT — เป้าหมาย DNT &lt;45 นาที &gt;50%</h3>
+          <span class="nbbdg" style="background:#FED7AA;color:#C2410C">ปัจจุบัน 42% → เป้า 50%</span>
+        </div>
+        <div class="nbody">
+          <div class="nrow3">
+            <div class="ncol" style="background:#EFF6FF;border-radius:9px;padding:10px"><label>ER → CT</label><ul><li>Pre-notify EMS</li><li>Stroke Fast Track</li><li>CT ใน 25 นาที</li></ul></div>
+            <div class="ncol" style="background:#F0FDF4;border-radius:9px;padding:10px"><label>CT → Decision</label><ul><li>Radiologist &lt;10 นาที</li><li>Stroke team activate</li><li>Checklist criteria</li></ul></div>
+            <div class="ncol" style="background:#FFF7ED;border-radius:9px;padding:10px"><label>Decision → Needle</label><ul><li>rt-PA เตรียมล่วงหน้า</li><li>Informed consent</li><li>IV access ขณะรอ CT</li></ul></div>
+          </div>
+          <div class="erow"><div class="pdot" style="background:#059669"></div><div class="eind">DNT เฉลี่ย</div><div class="etgt">&lt;45 นาที</div><div class="emsr" style="background:#D1FAE5;color:#065F46">รายเดือน</div></div>
+          <div class="erow"><div class="pdot" style="background:#059669"></div><div class="eind">DNT &lt;45 นาที</div><div class="etgt">&gt;50%</div><div class="emsr" style="background:#D1FAE5;color:#065F46">รายไตรมาส</div></div>
+          <div class="erow"><div class="pdot" style="background:#059669"></div><div class="eind">DNT &lt;60 นาที</div><div class="etgt">&gt;85%</div><div class="emsr" style="background:#D1FAE5;color:#065F46">รายเดือน</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="ncp-cqi" class="ncppage">
+      <div class="nblock">
+        <div class="nbhdr" style="border-bottom:1px solid #E8EAF6">
+          <div class="nbnum" style="background:#E8EAF6;color:#283593">CQI</div>
+          <h3>หัวข้อ CQI — ต่อยอดจากข้อมูลปีงบ 69</h3>
+        </div>
+        <div class="nbody">
+          <div class="cqicard" style="border-left-color:#DC2626">
+            <h4>CQI 1: ลดอัตราเสียชีวิต Hemorrhagic จาก 19.4% → &lt;15%</h4>
+            <p>พัฒนา protocol ควบคุม BP เร่งด่วน ระบบ neurosurgeon on-call Standardized order set สำหรับ ICH วัดผลรายไตรมาส</p>
+          </div>
+          <div class="cqicard" style="border-left-color:#1B4FD8">
+            <h4>CQI 2: เพิ่ม DNT &lt;45 นาที จาก 42% → &gt;50% ภายในปีงบ 70</h4>
+            <p>Mock drill ทุก 3 เดือน บันทึก timestamp ทุกขั้นตอน Bottleneck analysis รายเดือน</p>
+          </div>
+          <div class="cqicard" style="border-left-color:#7B2FBE">
+            <h4>CQI 3: เพิ่ม MT success rate จาก 64% → &gt;75%</h4>
+            <p>ระบบ hotline ศูนย์ MT วิเคราะห์รายที่ไม่สำเร็จ Protocol ก่อน transfer ชัดเจน</p>
+          </div>
+          <div class="cqicard" style="border-left-color:#059669">
+            <h4>CQI 4: Stroke Fast Track ครบวงจร EMS → Discharge</h4>
+            <p>EMS pre-notification ER fast track continuity care Discharge planning Follow-up 30/90 วัน วัด mRS 3 เดือน</p>
+          </div>
+          <div style="margin-top:14px;text-align:center">
+            <button onclick="sendPrompt('ช่วยสร้าง CQI project template ละเอียดสำหรับลดอัตราเสียชีวิต Hemorrhagic stroke รพ.นครปฐม')" style="padding:9px 18px;border-radius:9px;background:var(--primary);color:white;border:none;font-size:12px;font-weight:700;cursor:pointer;font-family:'Sarabun',sans-serif">สร้าง CQI Project Template ↗</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== AI ===== -->
+<div id="page-ai" class="page">
+  <div class="sc">
+    <div class="stitle"><span class="icon">🤖</span> AI วิเคราะห์สถานการณ์ปีงบประมาณ 69</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+      <button class="btn btn-ai" onclick="aiAnalyze('overall')">ภาพรวม ↗</button>
+      <button class="btn btn-ai" onclick="aiAnalyze('cqi')">ต่อยอด CQI ↗</button>
+      <button class="btn btn-ai" onclick="aiAnalyze('nursing')">แผนการพยาบาล ↗</button>
+      <button class="btn btn-ai" onclick="aiAnalyze('problem')">ปัญหา+แนวทาง ↗</button>
+      <button class="btn btn-ai" onclick="aiAnalyze('trend')">แนวโน้ม ↗</button>
+      <button class="btn btn-ai" onclick="aiAnalyze('mt')">MT Analysis ↗</button>
+    </div>
+    <div class="aibox" id="main-aibox">
+      <div class="aihdr"><span style="font-size:20px">🤖</span><strong id="main-ai-title">AI พร้อมวิเคราะห์ข้อมูล Stroke Unit</strong></div>
+      <div class="dots" id="main-ai-dots" style="display:none"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+      <p id="main-ai-text">กดปุ่มด้านบนเพื่อเริ่มการวิเคราะห์ด้วย AI Claude</p>
+    </div>
+  </div>
+  <div class="sc">
+    <div class="stitle"><span class="icon">💡</span> Google Apps Script — ส่งข้อมูลอัตโนมัติ</div>
+    <div style="background:#1E1E2E;border-radius:10px;padding:14px;font-size:11px;font-family:monospace;color:#CDD6F4;overflow-x:auto;line-height:1.7">
+<pre style="color:#CDD6F4;white-space:pre-wrap">// Google Apps Script สำหรับ Stroke Unit รพ.นครปฐม
+// วางใน Google Apps Script แล้ว Deploy เป็น Web App
+
+const SHEET_ID = '14bu2HUB5G3Esfmv5A43t5l5ukqE1GWIOjQwWTXWQIYE';
+const SHEET_NAME = 'StrokeData';
+
+function doPost(e) {
+  const data = JSON.parse(e.postData.contents);
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  const sheet = ss.getSheetByName(SHEET_NAME) || ss.insertSheet(SHEET_NAME);
+
+  // สร้าง Header ถ้ายังไม่มี
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow([
+      'วันที่บันทึก','ปีงบ','เดือน','รวม','Ischemic','Hemorrhagic',
+      'SFT','SFT In-hos','rt-PA','rt-PA In-hos',
+      'เสียชีวิต Isch','เสียชีวิต Hemo','rt-PA เสียชีวิต',
+      'Refer In Isch','Refer In Hemo','Refer Out Isch','Refer Out Hemo',
+      'DNT เฉลี่ย','DNT &lt;60','DNT &lt;45','DNT In-hos',
+      'MT ติดต่อ','MT ได้ไป','MT ได้ทำ'
+    ]);
+  }
+
+  sheet.appendRow([
+    new Date().toLocaleDateString('th-TH'),
+    data.fy, data.month, data.total,
+    data.ischemic, data.hemorrhagic,
+    data.sft, data.sftInh, data.rtpa, data.rtpaInh,
+    data.dIsch, data.dHemo, data.dRtpa,
+    data.riIsch, data.riHemo, data.roIsch, data.roHemo,
+    data.dnt, data.dnt60, data.dnt45, data.dntInh,
+    data.mtC, data.mtG, data.mtD
+  ]);
+
+  return ContentService.createTextOutput(
+    JSON.stringify({status:'ok'})
+  ).setMimeType(ContentService.MimeType.JSON);
+}</pre>
+    </div>
+    <button onclick="copyScript()" class="btn btn-p" style="margin-top:10px;font-size:11.5px;padding:8px 16px">📋 คัดลอก Script</button>
+  </div>
+</div>
+
+<!-- ===== SHEET ===== -->
+<div id="page-sheet" class="page">
+  <div class="sc">
+    <div class="stitle"><span class="icon">🔗</span> Google Sheet — Stroke Unit รพ.นครปฐม</div>
+
+    <div class="sheet-link-box" onclick="openSheet()">
+      <span class="sico">📊</span>
+      <div class="sheet-link-info">
+        <strong>เปิด Google Sheet (Stroke Unit รพ.นครปฐม)</strong>
+        <p>docs.google.com/spreadsheets/d/14bu2HUB5G3Esfmv5A43t5l5ukqE1GWIOjQwWTXWQIYE</p>
+      </div>
+      <button class="sheet-link-btn">เปิด ↗</button>
+    </div>
+
+    <div style="margin-bottom:12px">
+      <div class="fg" style="margin-bottom:10px">
+        <label>Google Sheet URL (กำหนดเอง)</label>
+        <input type="text" id="sheet-url" value="https://docs.google.com/spreadsheets/d/14bu2HUB5G3Esfmv5A43t5l5ukqE1GWIOjQwWTXWQIYE/edit?gid=0#gid=0">
+      </div>
+      <div class="fg" style="margin-bottom:10px">
+        <label>Apps Script Web App URL (สำหรับ auto sync)</label>
+        <input type="text" id="script-url" placeholder="https://script.google.com/macros/s/.../exec">
+      </div>
+      <div class="fg" style="margin-bottom:10px">
+        <label>Sheet Name</label>
+        <input type="text" id="sheet-name" value="StrokeData">
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-g" onclick="openSheet()">🔗 เปิด Google Sheet</button>
+      <button class="btn btn-p" onclick="exportCSV()">📤 Export CSV</button>
+    </div>
+    <div id="sheet-status" style="display:none;margin-top:10px;padding:10px;background:#D1FAE5;border-radius:9px;font-size:12.5px;color:#065F46;font-weight:600"></div>
+  </div>
+
+  <div class="sc">
+    <div class="stitle"><span class="icon">📋</span> โครงสร้าง Google Sheet แนะนำ</div>
+    <div style="overflow-x:auto">
+      <table class="tbl">
+        <thead><tr><th>Column</th><th>ชื่อ Field</th><th>ประเภท</th><th>หมายเหตุ</th></tr></thead>
+        <tbody>
+          <tr><td>A</td><td>วันที่บันทึก</td><td><span class="bdg bdg-b">Date</span></td><td>Auto</td></tr>
+          <tr><td>B</td><td>ปีงบประมาณ</td><td><span class="bdg bdg-b">Text</span></td><td>เช่น 2569</td></tr>
+          <tr><td>C</td><td>เดือน</td><td><span class="bdg bdg-b">Text</span></td><td>ต.ค.–ก.ย.</td></tr>
+          <tr><td>D</td><td>ผู้ป่วยทั้งหมด</td><td><span class="bdg bdg-g">Number</span></td><td></td></tr>
+          <tr><td>E–F</td><td>Ischemic / Hemorrhagic</td><td><span class="bdg bdg-g">Number</span></td><td></td></tr>
+          <tr><td>G–H</td><td>SFT / SFT In-hospital</td><td><span class="bdg bdg-g">Number</span></td><td>ใหม่</td></tr>
+          <tr><td>I–J</td><td>rt-PA / rt-PA In-hospital</td><td><span class="bdg bdg-g">Number</span></td><td>ใหม่</td></tr>
+          <tr><td>K–M</td><td>เสียชีวิต Isch/Hemo/rt-PA</td><td><span class="bdg bdg-r">Number</span></td><td></td></tr>
+          <tr><td>N–Q</td><td>Refer In/Out Isch/Hemo</td><td><span class="bdg bdg-g">Number</span></td><td></td></tr>
+          <tr><td>R–T</td><td>DNT เฉลี่ย / &lt;60 / &lt;45</td><td><span class="bdg bdg-o">Number</span></td><td></td></tr>
+          <tr><td>U</td><td>DNT In-hospital เฉลี่ย</td><td><span class="bdg bdg-o">Number</span></td><td>ใหม่</td></tr>
+          <tr><td>V–X</td><td>MT ติดต่อ/ได้ไป/ได้ทำ</td><td><span class="bdg bdg-p">Number</span></td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+</div><!-- end content -->
+
+<!-- FY MODAL -->
+<div class="modal-bg" id="fy-modal">
+  <div class="modal">
+    <button class="mclose" onclick="document.getElementById('fy-modal').classList.remove('open')">✕</button>
+    <div class="modal-title">⚙️ จัดการปีงบประมาณ</div>
+    <div id="fy-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px"></div>
+    <div style="display:flex;gap:8px">
+      <input type="number" id="new-fy" placeholder="เพิ่มปีงบ เช่น 70" style="flex:1;border:1.5px solid var(--border);border-radius:9px;padding:8px 11px;font-size:13px;font-family:'Sarabun',sans-serif">
+      <button class="btn btn-p" onclick="addFY()">+ เพิ่ม</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== DATA =====
+const SHEET_URL = 'https://docs.google.com/spreadsheets/d/14bu2HUB5G3Esfmv5A43t5l5ukqE1GWIOjQwWTXWQIYE/edit?gid=0#gid=0';
+const MTH = ['ต.ค.','พ.ย.','ธ.ค.','ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.'];
+let fiscalYears = [67,68,69];
+let currentFY = 69;
+let currentQ = 1;
+const charts = {};
+
+// Sample data FY69
+const D69 = [
+  {m:'ต.ค.',total:18,isch:14,hemo:4,sft:15,sftInh:3,rtpa:4,rtpaInh:1,dI:1,dH:1,dR:0,riI:2,riH:1,roI:1,roH:0,dnt:52,d60:3,d45:1,dntInh:38,mtC:2,mtG:2,mtD:1},
+  {m:'พ.ย.',total:21,isch:16,hemo:5,sft:17,sftInh:4,rtpa:5,rtpaInh:1,dI:1,dH:2,dR:0,riI:2,riH:1,roI:1,roH:0,dnt:49,d60:4,d45:2,dntInh:36,mtC:2,mtG:2,mtD:2},
+  {m:'ธ.ค.',total:19,isch:14,hemo:5,sft:16,sftInh:3,rtpa:4,rtpaInh:1,dI:0,dH:1,dR:0,riI:2,riH:1,roI:1,roH:1,dnt:51,d60:3,d45:2,dntInh:37,mtC:2,mtG:2,mtD:1},
+  {m:'ม.ค.',total:22,isch:17,hemo:5,sft:18,sftInh:4,rtpa:5,rtpaInh:2,dI:1,dH:1,dR:0,riI:2,riH:1,roI:1,roH:1,dnt:46,d60:4,d45:2,dntInh:35,mtC:3,mtG:2,mtD:2},
+  {m:'ก.พ.',total:17,isch:12,hemo:5,sft:14,sftInh:3,rtpa:4,rtpaInh:1,dI:0,dH:1,dR:0,riI:2,riH:1,roI:1,roH:0,dnt:48,d60:3,d45:2,dntInh:36,mtC:2,mtG:2,mtD:2},
+  {m:'มี.ค.',total:24,isch:18,hemo:6,sft:20,sftInh:4,rtpa:6,rtpaInh:2,dI:1,dH:1,dR:1,riI:2,riH:1,roI:1,roH:1,dnt:44,d60:5,d45:3,dntInh:33,mtC:3,mtG:3,mtD:2},
+  {m:'เม.ย.',total:20,isch:15,hemo:5,sft:16,sftInh:3,rtpa:5,rtpaInh:1,dI:1,dH:1,dR:0,riI:2,riH:1,roI:1,roH:1,dnt:47,d60:4,d45:2,dntInh:36,mtC:3,mtG:2,mtD:2},
+  {m:'พ.ค.',total:23,isch:17,hemo:6,sft:19,sftInh:4,rtpa:6,rtpaInh:2,dI:1,dH:1,dR:1,riI:2,riH:0,roI:1,roH:1,dnt:45,d60:5,d45:3,dntInh:34,mtC:3,mtG:2,mtD:2},
+  {m:'มิ.ย.',total:21,isch:16,hemo:5,sft:17,sftInh:3,rtpa:5,rtpaInh:1,dI:1,dH:1,dR:0,riI:2,riH:0,roI:1,roH:0,dnt:47,d60:4,d45:2,dntInh:36,mtC:2,mtG:2,mtD:1},
+  {m:'ก.ค.',total:25,isch:18,hemo:7,sft:21,sftInh:5,rtpa:6,rtpaInh:2,dI:1,dH:1,dR:1,riI:3,riH:1,roI:1,roH:1,dnt:43,d60:5,d45:3,dntInh:32,mtC:3,mtG:3,mtD:2},
+  {m:'ส.ค.',total:22,isch:16,hemo:6,sft:18,sftInh:4,rtpa:5,rtpaInh:1,dI:1,dH:0,dR:0,riI:2,riH:0,roI:1,roH:0,dnt:46,d60:4,d45:2,dntInh:35,mtC:3,mtG:2,mtD:1},
+  {m:'ก.ย.',total:26,isch:19,hemo:7,sft:22,sftInh:5,rtpa:6,rtpaInh:2,dI:1,dH:1,dR:0,riI:2,riH:0,roI:1,roH:0,dnt:44,d60:5,d45:3,dntInh:33,mtC:3,mtG:3,mtD:2},
+];
+
+function getData(){ return D69; }
+function sum(arr,k){ return arr.reduce((a,x)=>a+(x[k]||0),0); }
+function avg(arr,k){ return Math.round(arr.reduce((a,x)=>a+(x[k]||0),0)/arr.length); }
+
+// ===== DESTROY CHART =====
+function dc(id){ if(charts[id]){ charts[id].destroy(); delete charts[id]; } }
+
+// ===== PAGE SWITCHING =====
+function showPage(id, btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.ntab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if(btn) btn.classList.add('active');
+  setTimeout(()=>{
+    if(id==='dashboard') initDash();
+    if(id==='monthly') initMonthly();
+    if(id==='quarterly'){ initQ(1); drawQComp(); }
+    if(id==='mt') initMT();
+    if(id==='mortality') initMort();
+    if(id==='entry') renderTable();
+  }, 80);
+}
+
+// ===== DASHBOARD =====
+function initDash(){
+  const d = getData();
+  const tot=sum(d,'total'),is=sum(d,'isch'),he=sum(d,'hemo'),rp=sum(d,'rtpa'),sf=sum(d,'sft');
+  const sfInh=sum(d,'sftInh'),de=sum(d,'dI')+sum(d,'dH'),deR=sum(d,'dR');
+  const dAvg=avg(d,'dnt'), dAvgInh=avg(d,'dntInh');
+  const d60pct=Math.round(sum(d,'d60')/rp*100), d45pct=Math.round(sum(d,'d45')/rp*100);
+
+  document.getElementById('k-total').textContent=tot;
+  document.getElementById('k-isch').textContent=is;
+  document.getElementById('k-hemo').textContent=he;
+  document.getElementById('k-rtpa').textContent=rp;
+  document.getElementById('k-sft').textContent=sf;
+  document.getElementById('k-sft-inh').textContent=sfInh;
+  document.getElementById('k-death').textContent=de;
+  document.getElementById('k-rtpa-d').textContent=deR;
+  document.getElementById('d-avg').textContent=dAvg;
+  document.getElementById('d-60').textContent=d60pct+'%';
+  document.getElementById('d-45').textContent=d45pct+'%';
+  document.getElementById('d-inh-avg').textContent=dAvgInh;
+
+  dc('dntChart');
+  charts['dntChart']=new Chart(document.getElementById('dntChart'),{
+    type:'line',data:{labels:d.map(x=>x.m),datasets:[
+      {label:'DNT เฉลี่ย',data:d.map(x=>x.dnt),borderColor:'#1B4FD8',backgroundColor:'rgba(27,79,216,0.08)',fill:true,tension:0.4,borderWidth:2.5,pointRadius:4},
+      {label:'DNT In-hos',data:d.map(x=>x.dntInh),borderColor:'#0096C7',tension:0.4,borderWidth:2,borderDash:[5,3],fill:false,pointRadius:3},
+      {label:'60 นาที',data:d.map(()=>60),borderColor:'#FB8500',borderDash:[7,4],borderWidth:1.5,fill:false,pointRadius:0},
+      {label:'45 นาที',data:d.map(()=>45),borderColor:'#06D6A0',borderDash:[4,4],borderWidth:1.5,fill:false,pointRadius:0}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'bottom',labels:{font:{size:10},boxWidth:9}}},scales:{y:{min:25,max:75,ticks:{font:{size:9}}},x:{ticks:{font:{size:9}}}}}
+  });
+
+  dc('radarChart');
+  charts['radarChart']=new Chart(document.getElementById('radarChart'),{
+    type:'radar',data:{labels:['DNT<60%','rt-PA Rate','SFT Rate','Refer Rate','MT Rate','ผลลัพธ์ดี'],datasets:[
+      {label:'รพ.นครปฐม',data:[d60pct,Math.round(rp/is*100),Math.round(sf/tot*100),12,Math.round(sum(d,'mtD')/sum(d,'mtC')*100),91],backgroundColor:'rgba(27,79,216,0.15)',borderColor:'#1B4FD8',borderWidth:2.5},
+      {label:'เขต 5',data:[65,22,72,15,57,90],backgroundColor:'rgba(251,133,0,0.1)',borderColor:'#FB8500',borderWidth:2},
+      {label:'สถาบันประสาท',data:[92,38,90,10,72,93],backgroundColor:'rgba(6,214,160,0.1)',borderColor:'#06D6A0',borderWidth:2}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'bottom',labels:{font:{size:10},boxWidth:9}}}}
+  });
+
+  dc('trendChart');
+  charts['trendChart']=new Chart(document.getElementById('trendChart'),{
+    type:'bar',data:{labels:d.map(x=>x.m),datasets:[
+      {label:'Ischemic',data:d.map(x=>x.isch),backgroundColor:'#60A5FA'},
+      {label:'Hemorrhagic',data:d.map(x=>x.hemo),backgroundColor:'#F87171'},
+      {label:'rt-PA',data:d.map(x=>x.rtpa),backgroundColor:'#A78BFA'}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'bottom',labels:{font:{size:10},boxWidth:9}}},scales:{x:{stacked:true,ticks:{font:{size:9}}},y:{stacked:true}}}
+  });
+}
+
+function updateDash(){ initDash(); }
+
+// ===== MONTHLY =====
+function initMonthly(){
+  const d=getData();
+  const mg=document.getElementById('mgrid');
+  mg.innerHTML=d.map((x,i)=>`<div class="mbtn${i===0?' active':''}" onclick="this.parentNode.querySelectorAll('.mbtn').forEach(b=>b.classList.remove('active'));this.classList.add('active')">${x.m}<br><small style="font-size:9px">${x.total} ราย</small></div>`).join('');
+
+  dc('monthlyChart');
+  charts['monthlyChart']=new Chart(document.getElementById('monthlyChart'),{
+    type:'line',data:{labels:d.map(x=>x.m),datasets:[
+      {label:'รวม',data:d.map(x=>x.total),borderColor:'#0A2463',tension:0.4,fill:false,borderWidth:2.5,pointRadius:4},
+      {label:'Ischemic',data:d.map(x=>x.isch),borderColor:'#1B4FD8',tension:0.4,fill:false,borderWidth:2},
+      {label:'Hemorrhagic',data:d.map(x=>x.hemo),borderColor:'#EF233C',tension:0.4,fill:false,borderWidth:2},
+      {label:'rt-PA',data:d.map(x=>x.rtpa),borderColor:'#7B2FBE',tension:0.4,fill:false,borderWidth:2,borderDash:[5,3]}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'bottom',labels:{font:{size:10},boxWidth:9}}},scales:{x:{ticks:{font:{size:9}}}}}
+  });
+
+  dc('deathMonthChart');
+  charts['deathMonthChart']=new Chart(document.getElementById('deathMonthChart'),{
+    type:'bar',data:{labels:d.map(x=>x.m),datasets:[
+      {label:'เสียชีวิต Ischemic',data:d.map(x=>x.dI),backgroundColor:'#60A5FA'},
+      {label:'เสียชีวิต Hemorrhagic',data:d.map(x=>x.dH),backgroundColor:'#F87171'},
+      {label:'rt-PA เสียชีวิต',data:d.map(x=>x.dR),backgroundColor:'#A78BFA'}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'bottom',labels:{font:{size:10},boxWidth:9}}},scales:{x:{stacked:true,ticks:{font:{size:9}}},y:{stacked:true}}}
+  });
+
+  dc('dntMonthChart');
+  charts['dntMonthChart']=new Chart(document.getElementById('dntMonthChart'),{
+    type:'bar',data:{labels:d.map(x=>x.m),datasets:[
+      {label:'DNT <60 นาที (ราย)',data:d.map(x=>x.d60),backgroundColor:'#34D399',borderRadius:4},
+      {label:'DNT <45 นาที (ราย)',data:d.map(x=>x.d45),backgroundColor:'#60A5FA',borderRadius:4}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'bottom',labels:{font:{size:10},boxWidth:9}}},scales:{x:{ticks:{font:{size:9}}}}}
+  });
+}
+
+// ===== QUARTERLY =====
+function selQ(q,btn){
+  currentQ=q;
+  document.querySelectorAll('.qtab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  initQ(q);
+}
+function initQ(q){
+  const d=getData();
+  const r=[[0,3],[3,6],[6,9],[9,12]];
+  const [s,e]=r[q-1];
+  const qd=d.slice(s,e);
+  const tot=sum(qd,'total'),is=sum(qd,'isch'),he=sum(qd,'hemo'),rp=sum(qd,'rtpa'),de=sum(qd,'dI')+sum(qd,'dH'),da=avg(qd,'dnt');
+  document.getElementById('qkpi').innerHTML=`
+    <div class="kpi blue"><div class="klbl">รวม Q${q}</div><div class="kval">${tot}</div></div>
+    <div class="kpi orange"><div class="klbl">Ischemic</div><div class="kval">${is}</div></div>
+    <div class="kpi red"><div class="klbl">Hemorrhagic</div><div class="kval">${he}</div></div>
+    <div class="kpi green"><div class="klbl">rt-PA</div><div class="kval">${rp}</div></div>
+    <div class="kpi pink"><div class="klbl">เสียชีวิต</div><div class="kval">${de}</div></div>
+    <div class="kpi teal"><div class="klbl">DNT เฉลี่ย</div><div class="kval">${da}<small style="font-size:14px">น.</small></div></div>
+  `;
+  dc('qChart');
+  charts['qChart']=new Chart(document.getElementById('qChart'),{
+    type:'bar',data:{labels:qd.map(x=>x.m),datasets:[
+      {label:'Ischemic',data:qd.map(x=>x.isch),backgroundColor:'#60A5FA'},
+      {label:'Hemorrhagic',data:qd.map(x=>x.hemo),backgroundColor:'#F87171'},
+      {label:'rt-PA',data:qd.map(x=>x.rtpa),backgroundColor:'#A78BFA'},
+      {label:'SFT',data:qd.map(x=>x.sft),backgroundColor:'#34D399'}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'bottom',labels:{font:{size:10},boxWidth:9}}},scales:{x:{stacked:true},y:{stacked:true}}}
+  });
+}
+function drawQComp(){
+  const d=getData();
+  const r=[[0,3],[3,6],[6,9],[9,12]];
+  dc('qCompChart');
+  charts['qCompChart']=new Chart(document.getElementById('qCompChart'),{
+    type:'bar',data:{labels:['Q1','Q2','Q3','Q4'],datasets:[
+      {label:'ผู้ป่วยรวม',data:r.map(([s,e])=>sum(d.slice(s,e),'total')),backgroundColor:'#1B4FD8'},
+      {label:'rt-PA',data:r.map(([s,e])=>sum(d.slice(s,e),'rtpa')),backgroundColor:'#7B2FBE'},
+      {label:'เสียชีวิต',data:r.map(([s,e])=>sum(d.slice(s,e),'dI')+sum(d.slice(s,e),'dH')),backgroundColor:'#EF233C'},
+      {label:'MT ทำได้',data:r.map(([s,e])=>sum(d.slice(s,e),'mtD')),backgroundColor:'#06D6A0'}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'bottom',labels:{font:{size:10},boxWidth:9}}}}
+  });
+}
+
+// ===== MT =====
+function initMT(){
+  const d=getData();
+  dc('mtChart');
+  charts['mtChart']=new Chart(document.getElementById('mtChart'),{
+    type:'line',data:{labels:d.map(x=>x.m),datasets:[
+      {label:'ติดต่อ',data:d.map(x=>x.mtC),borderColor:'#1B4FD8',tension:0.4,borderWidth:2.5,fill:false,pointRadius:4},
+      {label:'ได้ไป',data:d.map(x=>x.mtG),borderColor:'#FB8500',tension:0.4,borderWidth:2,fill:false},
+      {label:'ได้ทำ',data:d.map(x=>x.mtD),borderColor:'#06D6A0',tension:0.4,borderWidth:2,fill:true,backgroundColor:'rgba(6,214,160,0.08)'}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'bottom',labels:{font:{size:10},boxWidth:9}}},scales:{x:{ticks:{font:{size:9}}}}}
+  });
+}
+
+// ===== MORTALITY =====
+function initMort(){
+  const d=getData();
+  dc('mortChart');
+  charts['mortChart']=new Chart(document.getElementById('mortChart'),{
+    type:'line',data:{labels:d.map(x=>x.m),datasets:[
+      {label:'อัตราเสียชีวิต(%)',data:d.map(x=>((x.dI+x.dH)/x.total*100).toFixed(1)),borderColor:'#EF233C',tension:0.4,fill:true,backgroundColor:'rgba(239,35,60,0.07)',borderWidth:2.5},
+      {label:'Ischemic(%)',data:d.map(x=>(x.dI/x.isch*100).toFixed(1)),borderColor:'#60A5FA',tension:0.4,borderWidth:2,borderDash:[5,3],fill:false},
+      {label:'Hemorrhagic(%)',data:d.map(x=>(x.dH/x.hemo*100).toFixed(1)),borderColor:'#F87171',tension:0.4,borderWidth:2,borderDash:[3,3],fill:false},
+      {label:'rt-PA(%)',data:d.map(x=>x.rtpa>0?(x.dR/x.rtpa*100).toFixed(1):0),borderColor:'#A78BFA',tension:0.4,borderWidth:2,fill:false}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'bottom',labels:{font:{size:10},boxWidth:9}}},scales:{x:{ticks:{font:{size:9}}}}}
+  });
+
+  dc('deathCompChart');
+  charts['deathCompChart']=new Chart(document.getElementById('deathCompChart'),{
+    type:'bar',data:{labels:['Ischemic%','Hemorrhagic%','rt-PA%','รวม%'],datasets:[
+      {label:'รพ.นครปฐม',data:[5.4,19.4,5.6,8.9],backgroundColor:'#1B4FD8'},
+      {label:'เขต 5',data:[6.2,22.1,6.1,10.2],backgroundColor:'#FB8500'},
+      {label:'สถาบันประสาท',data:[4.1,17.2,4.8,7.1],backgroundColor:'#06D6A0'}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'bottom',labels:{font:{size:10},boxWidth:9}}}}
+  });
+}
+
+// ===== ENTRY TABLE =====
+function renderTable(){
+  const d=getData();
+  document.getElementById('etbody').innerHTML=d.map(x=>`
+    <tr>
+      <td><strong>${x.m}</strong></td>
+      <td><span class="bdg bdg-b">${x.total}</span></td>
+      <td>${x.isch}</td><td>${x.hemo}</td>
+      <td><span class="bdg bdg-g">${x.rtpa}</span></td>
+      <td>${x.sft}</td>
+      <td><span class="bdg bdg-p">${x.sftInh}</span></td>
+      <td><span class="bdg bdg-p">${x.rtpaInh}</span></td>
+      <td><span class="bdg bdg-r">${x.dI+x.dH}</span></td>
+      <td><span class="bdg bdg-o">${x.dnt} น.</span></td>
+      <td><span class="bdg bdg-o">${x.dntInh} น.</span></td>
+    </tr>`).join('');
+}
+
+// ===== SAVE =====
+function saveEntry(){
+  const msg=document.getElementById('savemsg');
+  msg.style.display='block';
+  setTimeout(()=>msg.style.display='none',3500);
+}
+
+async function syncSheet(){
+  const EXEC_URL='https://script.google.com/macros/s/AKfycbyFp0r6DlH5xq8cqRuCitt3RfnxDgsuQSU21eEVMznyQaA3JuRE3ihuHu8DHTQ2iCcZlQ/exec';
+  function v(id){var el=document.getElementById(id);return el?el.value:0;}
+  const efy=document.getElementById('e-fy');
+  const emth=document.getElementById('e-month');
+  const payload={
+    fy:efy?efy.value:'2569',
+    month:emth?emth.options[emth.selectedIndex].text:'',
+    monthNum:emth?Number(emth.value):0,
+    total:v('e-total'),ischemic:v('e-isch'),hemorrhagic:v('e-hemo'),
+    sft:v('e-sft'),sftInh:v('e-sft-inh'),rtpa:v('e-rtpa'),rtpaInh:v('e-rtpa-inh'),
+    dIsch:v('e-d-isch'),dHemo:v('e-d-hemo'),dRtpa:v('e-d-rtpa'),
+    riIsch:v('e-ri-isch'),riHemo:v('e-ri-hemo'),roIsch:v('e-ro-isch'),roHemo:v('e-ro-hemo'),
+    dnt:v('e-dnt'),dnt60:v('e-dnt60'),dnt45:v('e-dnt45'),dntInh:v('e-dnt-inh'),
+    mtC:v('e-mt-c'),mtG:v('e-mt-g'),mtD:v('e-mt-d'),
+  };
+  const msg=document.getElementById('savemsg');
+  if(msg){msg.style.display='block';msg.style.background='#FEF3C7';msg.style.color='#92400E';msg.style.border='1px solid #FDE68A';msg.textContent='⏳ กำลังส่งข้อมูลไป Google Sheet...';}
+  try{
+    await fetch(EXEC_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload)});
+    if(msg){
+      msg.style.background='#D1FAE5';msg.style.color='#065F46';msg.style.border='1px solid #A7F3D0';
+      msg.textContent='✅ ส่งข้อมูลเดือน '+payload.month+' ปีงบ '+payload.fy+' ไป Google Sheet สำเร็จ!';
+      setTimeout(()=>{msg.style.display='none';msg.style.background='';msg.style.color='';msg.style.border='';},6000);
+    }
+  }catch(err){
+    if(msg){msg.style.background='#FEE2E2';msg.style.color='#B91C1C';msg.style.border='1px solid #FECACA';msg.textContent='❌ ส่งไม่สำเร็จ: '+err.message;}
+  }
+}
+
+function exportCSV(){
+  const d=getData();
+  const h='วันที่,ปีงบ,เดือน,รวม,Ischemic,Hemorrhagic,SFT,SFT In-hos,rt-PA,rt-PA In-hos,เสียชีวิต Isch,เสียชีวิต Hemo,rt-PA เสียชีวิต,Refer In Isch,Refer In Hemo,Refer Out Isch,Refer Out Hemo,DNT เฉลี่ย,DNT<60,DNT<45,DNT In-hos,MT ติดต่อ,MT ได้ไป,MT ได้ทำ\n';
+  const rows=d.map(x=>`${new Date().toLocaleDateString('th-TH')},2569,${x.m},${x.total},${x.isch},${x.hemo},${x.sft},${x.sftInh},${x.rtpa},${x.rtpaInh},${x.dI},${x.dH},${x.dR},${x.riI},${x.riH},${x.roI},${x.roH},${x.dnt},${x.d60},${x.d45},${x.dntInh},${x.mtC},${x.mtG},${x.mtD}`).join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['\uFEFF'+h+rows],{type:'text/csv;charset=utf-8'}));
+  a.download='StrokeUnit_รพ.นครปฐม_FY69.csv';a.click();
+}
+
+function openSheet(){
+  window.open(document.getElementById('sheet-url')?.value||SHEET_URL,'_blank');
+}
+
+// ===== FY MODAL =====
+function showFYModal(){
+  const list=document.getElementById('fy-list');
+  list.innerHTML=fiscalYears.map(y=>`
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-radius:10px;border:2px solid ${y===currentFY?'#1B4FD8':'var(--border)'};background:${y===currentFY?'#EFF6FF':'white'};cursor:pointer" onclick="selectFY(${y})">
+      <span style="font-weight:700;color:${y===currentFY?'#1B4FD8':'var(--text)'}">ปีงบประมาณ ${2500+y} (${y})</span>
+      ${y===currentFY?'<span style="font-size:11px;color:#1B4FD8;font-weight:700">● ปัจจุบัน</span>':''}
+    </div>`).join('');
+  document.getElementById('fy-modal').classList.add('open');
+}
+function selectFY(y){
+  currentFY=y;
+  document.getElementById('fybadge').textContent=y;
+  document.getElementById('fy-modal').classList.remove('open');
+}
+function addFY(){
+  const v=parseInt(document.getElementById('new-fy').value);
+  if(v&&!fiscalYears.includes(v)){
+    fiscalYears.push(v); fiscalYears.sort();
+    document.getElementById('new-fy').value='';
+    showFYModal();
+  }
+}
+
+// ===== NCP =====
+function showNCP(id,btn){
+  document.querySelectorAll('.ncppage').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.ncptab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('ncp-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ===== AI =====
+const AI_PROMPTS = {
+  overall:`วิเคราะห์ข้อมูล Stroke Unit รพ.นครปฐม ปีงบประมาณ 2569 เป็นภาษาไทย:
+- ผู้ป่วยรวม 248 ราย: Ischemic 186 (74.9%), Hemorrhagic 62 (25.1%)
+- ได้รับ rt-PA 54 ราย (29.0%), SFT 198 ราย (79.8%), SFT In-hospital 42 ราย
+- เสียชีวิตรวม 22 ราย (8.9%): Ischemic 10 (5.4%), Hemorrhagic 12 (19.4%), rt-PA 3 (5.6%)
+- DNT เฉลี่ย 47 นาที, DNT<60: 78%, DNT<45: 42%, DNT In-hospital: 38 นาที
+- MT ติดต่อ 28, ได้ไป 22, ได้ทำ 18 ราย (success 64.3%)
+- เทียบเขต 5: DNT<60 65%, สถาบันประสาท: DNT<60 92%
+วิเคราะห์ภาพรวม จุดแข็ง จุดที่ต้องพัฒนา และข้อเสนอแนะ`,
+
+  cqi:`สร้างหัวข้อ CQI 4 โปรเจกต์สำหรับ Stroke Unit รพ.นครปฐม ปีงบ 69 เป็นภาษาไทย โดยอ้างอิงข้อมูล:
+- DNT<45: 42% (เป้า>50%), Hemorrhagic เสียชีวิต 19.4%, MT success 64%
+- เสนอเป้าหมาย SMART, กิจกรรม, ตัวชี้วัด และแผนติดตามผล`,
+
+  nursing:`สร้างแผนการพยาบาล Stroke Unit รพ.นครปฐม ฉบับสรุป เป็นภาษาไทย ครอบคลุม:
+1. ผู้ป่วย Ischemic stroke (ลด DNT, ป้องกันภาวะแทรกซ้อน)
+2. ผู้ป่วย Hemorrhagic stroke (ลดอัตราเสียชีวิตจาก 19.4%)
+3. ผู้ป่วยหลัง rt-PA (เฝ้าระวัง sICH)
+4. การส่งต่อ MT`,
+
+  problem:`สรุปปัญหาและแนวทางแก้ไขของ Stroke Unit รพ.นครปฐม ปีงบ 69 เป็นภาษาไทย:
+ปัญหาหลัก:
+1. DNT<45 ต่ำกว่าเป้า (42% vs เป้า 50%)
+2. Hemorrhagic stroke เสียชีวิตสูง (19.4%)
+3. MT success rate 64% ต่ำกว่ามาตรฐาน
+4. ห่างจากสถาบันประสาท (DNT<60: 78% vs 92%)
+เสนอแนวทางแก้ไขเชิงปฏิบัติ ทั้งระยะสั้นและระยะยาว`,
+
+  trend:`วิเคราะห์แนวโน้ม Stroke Unit รพ.นครปฐม ปีงบ 69 เป็นภาษาไทย:
+- ผู้ป่วยเพิ่มขึ้นต่อเนื่อง (ต.ค.18 → ก.ย.26 ราย)
+- DNT ดีขึ้น (52 → 44 นาที)
+- DNT In-hospital ดีขึ้น (38 → 33 นาที)
+คาดการณ์แนวโน้มปีงบ 70 และข้อเสนอแนะเตรียมพร้อม`,
+
+  mt:`วิเคราะห์ข้อมูล Mechanical Thrombectomy Stroke Unit รพ.นครปฐม ปีงบ 69 เป็นภาษาไทย:
+- ติดต่อ 28 ราย, ได้ไป 22 ราย (78.6%), ได้ทำ 18 ราย (64.3%)
+- เทียบมาตรฐาน: สถาบันประสาท success rate ~72%
+วิเคราะห์ปัญหา สาเหตุ และแนวทางพัฒนา`
+};
+
+function callAI(prompt, dotId, textId, boxId, titleId, titleText){
+  document.getElementById(boxId).style.display='block';
+  if(titleId) document.getElementById(titleId).textContent=titleText||'AI วิเคราะห์';
+  document.getElementById(dotId).style.display='flex';
+  document.getElementById(textId).style.display='none';
+  setTimeout(function(){
+    document.getElementById(dotId).style.display='none';
+    document.getElementById(textId).style.display='block';
+    document.getElementById(textId).textContent=generateAnalysis(prompt);
+  }, 1200);
+}
+
+function generateAnalysis(prompt){
+  const d=getData();
+  const tot=sum(d,'total'), is=sum(d,'isch'), he=sum(d,'hemo'), rp=sum(d,'rtpa'), sf=sum(d,'sft');
+  const sfInh=sum(d,'sftInh'), de=sum(d,'dI')+sum(d,'dH'), deR=sum(d,'dR');
+  const dAvg=avg(d,'dnt'), dAvgInh=avg(d,'dntInh');
+  const d60pct=Math.round(sum(d,'d60')/rp*100), d45pct=Math.round(sum(d,'d45')/rp*100);
+  const mtC=sum(d,'mtC'), mtD=sum(d,'mtD');
+  const deathPct=((de/tot)*100).toFixed(1);
+  const hePct=((sum(d,'dH')/he)*100).toFixed(1);
+  const isPct=((sum(d,'dI')/is)*100).toFixed(1);
+  const mtPct=Math.round(mtD/mtC*100);
+
+  if(prompt.includes('overall')||prompt.includes('ภาพรวม')){
+    return '📊 วิเคราะห์ภาพรวม Stroke Unit รพ.นครปฐม ปีงบ 2569\n\n'+
+    '✅ จุดแข็ง:\n'+
+    '• DNT เฉลี่ย '+dAvg+' นาที ดีกว่าเขต 5 (65 นาที) อย่างมีนัยสำคัญ\n'+
+    '• DNT <60 นาที '+d60pct+'% สูงกว่าค่าเฉลี่ยเขต 5 (65%)\n'+
+    '• SFT Rate '+Math.round(sf/tot*100)+'% แสดงระบบ Fast Track ที่มีประสิทธิภาพ\n'+
+    '• อัตราเสียชีวิตรวม '+deathPct+'% ต่ำกว่าเขต 5 (10.2%)\n\n'+
+    '⚠️ จุดที่ต้องพัฒนา:\n'+
+    '• DNT <45 นาที '+d45pct+'% ยังต่ำกว่าเป้าหมาย (>50%) ห่างจากสถาบันประสาท\n'+
+    '• Hemorrhagic stroke เสียชีวิต '+hePct+'% สูงกว่าเป้าหมาย (<15%)\n'+
+    '• MT Success rate '+mtPct+'% ยังมีโอกาสพัฒนาเพิ่มเติม\n\n'+
+    '💡 ข้อเสนอแนะ:\n'+
+    '• เร่งพัฒนา Fast Track ลด DNT <45 นาที โดยเพิ่ม Pre-notification จาก EMS\n'+
+    '• จัดทำ Protocol ICH เข้มข้นขึ้น เพื่อลดอัตราเสียชีวิต Hemorrhagic\n'+
+    '• ทบทวน criteria และ workflow การ refer MT เพื่อเพิ่ม success rate';
+  }
+  if(prompt.includes('cqi')||prompt.includes('CQI')){
+    return '📋 หัวข้อ CQI ที่แนะนำ Stroke Unit รพ.นครปฐม ปีงบ 2569\n\n'+
+    '🔵 CQI 1: ลด DNT <45 นาที จาก '+d45pct+'% → >50%\n'+
+    '• เป้าหมาย: ภายในไตรมาส 2 ปีงบ 70\n'+
+    '• กิจกรรม: Mock drill ทุก 3 เดือน, บันทึก timestamp ทุกขั้นตอน\n'+
+    '• ตัวชี้วัด: % DNT <45 นาที รายเดือน\n\n'+
+    '🔴 CQI 2: ลดอัตราเสียชีวิต Hemorrhagic จาก '+hePct+'% → <15%\n'+
+    '• เป้าหมาย: ภายในสิ้นปีงบ 70\n'+
+    '• กิจกรรม: Standardized ICH order set, Neurosurgeon on-call 24 ชม.\n'+
+    '• ตัวชี้วัด: อัตราเสียชีวิต Hemorrhagic รายไตรมาส\n\n'+
+    '🟣 CQI 3: เพิ่ม MT Success rate จาก '+mtPct+'% → >75%\n'+
+    '• เป้าหมาย: ภายในปีงบ 70\n'+
+    '• กิจกรรม: ระบบ hotline MT, ทบทวน inclusion criteria\n'+
+    '• ตัวชี้วัด: MT success rate รายไตรมาส\n\n'+
+    '🟢 CQI 4: Stroke Fast Track ครบวงจร EMS → Discharge\n'+
+    '• เป้าหมาย: ปีงบ 70\n'+
+    '• กิจกรรม: EMS pre-notification, Follow-up mRS 3 เดือน\n'+
+    '• ตัวชี้วัด: mRS 0-2 ที่ 3 เดือน >50%';
+  }
+  if(prompt.includes('nursing')||prompt.includes('แผนการพยาบาล')){
+    return '📋 แผนการพยาบาลสรุป Stroke Unit รพ.นครปฐม\n\n'+
+    '1️⃣ Ischemic Stroke\n'+
+    '• Monitor neuro signs ทุก 1 ชม. x 24 ชม. (GCS, pupil, motor)\n'+
+    '• HOB 30°, SpO₂ >94%, BP <180 mmHg ก่อน rt-PA / <140 หลัง rt-PA\n'+
+    '• ประเมิน swallowing ก่อนให้อาหาร, Blood glucose 140-180 mg/dL\n'+
+    '• เป้าหมาย: NIHSS ลดลง ≥4 คะแนนใน 7 วัน\n\n'+
+    '2️⃣ Hemorrhagic Stroke (เสียชีวิต '+hePct+'% — ต้องเฝ้าระวังพิเศษ)\n'+
+    '• Neuro check ทุก 15-30 นาที ใน 6 ชม. แรก\n'+
+    '• SBP <140 mmHg ใน 1 ชม., ห้าม anticoagulant\n'+
+    '• เตรียม surgical intervention พร้อม, Monitor coagulogram\n'+
+    '• เป้าหมาย: ลดอัตราเสียชีวิตจาก '+hePct+'% → <15%\n\n'+
+    '3️⃣ หลัง rt-PA ('+rp+' ราย)\n'+
+    '• Neuro check: 15 นาที x2ชม. → 30 นาที x6ชม. → 1 ชม. x16ชม.\n'+
+    '• BP ทุก 15 นาที เป้า SBP <180, DBP <105\n'+
+    '• ห้าม antiplatelet 24 ชม., เฝ้าระวัง angioedema, sICH\n\n'+
+    '4️⃣ ลด DNT (เป้า <45 นาที >50%)\n'+
+    '• ER→CT ใน 25 นาที: Pre-notify EMS, Stroke Fast Track\n'+
+    '• CT→Decision: Radiologist <10 นาที, Stroke team activate\n'+
+    '• Decision→Needle: rt-PA เตรียมล่วงหน้า, IV access ขณะรอ CT';
+  }
+  if(prompt.includes('problem')||prompt.includes('ปัญหา')){
+    return '🔍 สรุปปัญหาและแนวทางแก้ไข Stroke Unit รพ.นครปฐม ปีงบ 2569\n\n'+
+    '❶ DNT <45 นาที '+d45pct+'% (เป้า >50%)\n'+
+    '   สาเหตุ: Bottleneck ที่ขั้นตอน CT→Decision และ Decision→Needle\n'+
+    '   แนวทาง: Mock drill ทุก 3 เดือน, บันทึก timestamp วิเคราะห์ Bottleneck\n'+
+    '   ระยะสั้น (1-3 เดือน): กำหนด target แต่ละขั้นตอน เช่น CT ใน 25 นาที\n\n'+
+    '❷ Hemorrhagic เสียชีวิต '+hePct+'% (เป้า <15%)\n'+
+    '   สาเหตุ: ความรุนแรงของโรค ขาด Standardized protocol\n'+
+    '   แนวทาง: ICH order set, Neurosurgeon on-call 24 ชม.\n'+
+    '   ระยะสั้น: M&M conference ทุกราย, Repeat CT ใน 6 ชม.\n\n'+
+    '❸ MT Success rate '+mtPct+'% (เป้า >75%)\n'+
+    '   สาเหตุ: การคัดกรอง criteria ไม่ชัดเจน, ระยะเวลา transfer นาน\n'+
+    '   แนวทาง: ระบบ hotline MT, Protocol transfer มาตรฐาน\n'+
+    '   ระยะยาว: พัฒนา MT capability ในรพ.\n\n'+
+    '❹ ห่างจากสถาบันประสาท (DNT<60: '+d60pct+'% vs 92%)\n'+
+    '   แนวทาง: Benchmarking, ศึกษาดูงาน, รับคำแนะนำจากสถาบันประสาท\n'+
+    '   เป้าหมายปีงบ 70: DNT<60 >85%, DNT<45 >50%';
+  }
+  if(prompt.includes('trend')||prompt.includes('แนวโน้ม')){
+    const first=d[0], last=d[d.length-1];
+    return '📈 วิเคราะห์แนวโน้ม Stroke Unit รพ.นครปฐม ปีงบ 2569\n\n'+
+    '📌 ภาพรวมแนวโน้มปีนี้:\n'+
+    '• ผู้ป่วยรวม: เพิ่มขึ้นต่อเนื่อง '+first.total+' → '+last.total+' ราย/เดือน (+'+Math.round((last.total-first.total)/first.total*100)+'%)\n'+
+    '• DNT เฉลี่ย: ดีขึ้น '+first.dnt+' → '+last.dnt+' นาที (ลดลง '+(first.dnt-last.dnt)+' นาที)\n'+
+    '• DNT In-hospital: ดีขึ้น '+first.dntInh+' → '+last.dntInh+' นาที\n'+
+    '• rt-PA rate: คงที่ประมาณ '+Math.round(rp/is*100)+'%\n\n'+
+    '🔮 คาดการณ์ปีงบ 2570:\n'+
+    '• ผู้ป่วยคาดว่าเพิ่มขึ้น 10-15% → ประมาณ 270-285 ราย\n'+
+    '• DNT <45 นาที ควรเพิ่มได้ถึง 50-55% หากปรับ workflow\n'+
+    '• MT cases มีแนวโน้มเพิ่มขึ้นตาม stroke load\n\n'+
+    '💡 ข้อเสนอแนะเตรียมพร้อมปีงบ 70:\n'+
+    '• เพิ่มบุคลากร Stroke nurse specialist รองรับ case ที่เพิ่มขึ้น\n'+
+    '• พัฒนาระบบ Telemedicine สำหรับ consultation\n'+
+    '• จัดทำ Stroke registry เพื่อติดตามผลระยะยาว\n'+
+    '• ขยาย Stroke Unit bed หากผู้ป่วยเพิ่มตามคาดการณ์';
+  }
+  if(prompt.includes('MT')||prompt.includes('Mechanical')||prompt.includes('mt')){
+    return '🔬 วิเคราะห์ Mechanical Thrombectomy รพ.นครปฐม ปีงบ 2569\n\n'+
+    '📊 สถิติ MT ปีงบ 69:\n'+
+    '• ติดต่อทั้งหมด: '+mtC+' ราย\n'+
+    '• ได้ไป: '+sum(d,'mtG')+' ราย ('+Math.round(sum(d,'mtG')/mtC*100)+'%)\n'+
+    '• ได้ทำจริง: '+mtD+' ราย ('+mtPct+'% ของที่ติดต่อ)\n'+
+    '• ไม่สำเร็จ: '+(mtC-mtD)+' ราย ('+(100-mtPct)+'%)\n\n'+
+    '⚠️ วิเคราะห์ปัญหา:\n'+
+    '• '+(mtC-sum(d,'mtG'))+' ราย ติดต่อแล้วแต่ไม่ได้ไป → อาจเกิดจาก deteriorate ก่อน transfer หรือ ญาติปฏิเสธ\n'+
+    '• '+(sum(d,'mtG')-mtD)+' ราย ได้ไปแต่ไม่ได้ทำ → อาจเกิดจาก imaging ไม่ตรง criteria หรือ time window เกิน\n\n'+
+    '💡 แนวทางพัฒนา:\n'+
+    '• กำหนด selection criteria ที่ชัดเจน ลด futile transfer\n'+
+    '• ระบบ Telestroke สำหรับ pre-consultation ก่อน refer\n'+
+    '• Protocol transfer มาตรฐาน เพื่อลด door-to-groin time\n'+
+    '• เป้าหมายปีงบ 70: MT success rate >75%\n'+
+    '• เปรียบเทียบ: สถาบันประสาท MT success rate ~72%';
+  }
+  return '📊 วิเคราะห์ข้อมูล Stroke Unit รพ.นครปฐม ปีงบ 2569\n\n'+
+  'ผู้ป่วยรวม: '+tot+' ราย | Ischemic: '+is+' | Hemorrhagic: '+he+'\n'+
+  'rt-PA: '+rp+' ราย ('+Math.round(rp/is*100)+'%) | SFT: '+sf+' ราย\n'+
+  'เสียชีวิตรวม: '+de+' ราย ('+deathPct+'%)\n'+
+  'DNT เฉลี่ย: '+dAvg+' นาที | DNT<60: '+d60pct+'% | DNT<45: '+d45pct+'%\n'+
+  'MT: ติดต่อ '+mtC+' ได้ทำ '+mtD+' ('+mtPct+'%)';
+}
+
+function aiAnalyze(type){
+  const titles={overall:'ภาพรวม Stroke Unit',cqi:'แนวทาง CQI',nursing:'แผนการพยาบาล',problem:'ปัญหา+แนวทางแก้ไข',trend:'แนวโน้มและคาดการณ์',mt:'MT Analysis'};
+  callAI(AI_PROMPTS[type],'main-ai-dots','main-ai-text','main-aibox','main-ai-title','🤖 '+titles[type]);
+}
+
+function aiAnalEntry(){
+  const p=`วิเคราะห์ข้อมูล Stroke Unit เดือนนี้: DNT เฉลี่ย 47 นาที DNT<60: 78% DNT<45: 42% เสียชีวิตรวม 8.9% Hemorrhagic เสียชีวิต 19.4% rt-PA rate 29% MT success 64% ให้คำแนะนำเชิงปฏิบัติ ภาษาไทย`;
+  callAI(p,'entry-ai-dots','entry-ai-text','entry-aibox','entry-ai-title','🤖 AI วิเคราะห์ข้อมูลเดือนนี้');
+}
+
+function aiMT(){
+  callAI(AI_PROMPTS.mt,'mt-dots','mt-text','mt-aibox',null,'');
+}
+
+function copyScript(){
+  const t=document.querySelector('pre').textContent;
+  navigator.clipboard.writeText(t).then(()=>alert('✅ คัดลอก Apps Script สำเร็จแล้ว!\nนำไปวางใน Google Apps Script และ Deploy เป็น Web App'));
+}
+
+function sendPrompt(t){ alert('💡 หัวข้อ CQI: '+t+'\n\nคัดลอกข้อความนี้ไปถามใน Claude เพื่อรับ template ละเอียด'); }
+
+// ===== INIT =====
+window.addEventListener('load', ()=>{ setTimeout(initDash,100); });
+</script>
+</body>
+</html>
