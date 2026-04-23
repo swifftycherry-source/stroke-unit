@@ -312,6 +312,7 @@ body { font-family: 'Sarabun', sans-serif; background: var(--bg); color: var(--t
 
 <!-- ===== DASHBOARD ===== -->
 <div id="page-dashboard" class="page active">
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><button class="btn btn-p" onclick="loadSheetData()" style="background:#0A2463;font-size:12px;padding:7px 14px">🔄 โหลดข้อมูลจาก Google Sheet</button><span id="data-status" style="font-size:11px;color:#5a6a8a"></span></div>
   <div class="fy-sel">
     <label>ปีงบประมาณ:</label>
     <select id="dash-fy" onchange="updateDash()">
@@ -468,7 +469,8 @@ body { font-family: 'Sarabun', sans-serif; background: var(--bg); color: var(--t
 <div id="page-monthly" class="page">
   <div class="sc">
     <div class="stitle"><span class="icon">📅</span> รายงานรายเดือน</div>
-    <div class="fy-sel">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><button class="btn btn-p" onclick="loadSheetData()" style="background:#0A2463;font-size:12px;padding:7px 14px">🔄 โหลดข้อมูลจาก Google Sheet</button><span id="data-status" style="font-size:11px;color:#5a6a8a"></span></div>
+  <div class="fy-sel">
       <label>ปีงบประมาณ:</label>
       <select id="m-fy" onchange="initMonthly()">
         <option value="67">2567</option><option value="68">2568</option><option value="69" selected>2569</option>
@@ -814,6 +816,7 @@ function doPost(e) {
     </div>
     <div class="btn-row">
       <button class="btn btn-g" onclick="openSheet()">🔗 เปิด Google Sheet</button>
+      <button class="btn btn-p" onclick="loadSheetData()" style="background:#0A2463">🔄 โหลดข้อมูลจาก Sheet</button>
       <button class="btn btn-p" onclick="exportCSV()">📤 Export CSV</button>
     </div>
     <div id="sheet-status" style="display:none;margin-top:10px;padding:10px;background:#D1FAE5;border-radius:9px;font-size:12.5px;color:#065F46;font-weight:600"></div>
@@ -843,6 +846,7 @@ function doPost(e) {
   </div>
 </div>
 
+<div id="data-load-indicator" style="display:none;position:fixed;bottom:16px;right:16px;padding:10px 16px;border-radius:10px;font-size:12px;font-weight:600;font-family:Sarabun,sans-serif;z-index:999;box-shadow:0 4px 12px rgba(0,0,0,0.15);max-width:340px;line-height:1.5"></div>
 </div><!-- end content -->
 
 <!-- FY MODAL -->
@@ -868,22 +872,93 @@ let currentQ = 1;
 const charts = {};
 
 // Sample data FY69
-const D69 = [
-  {m:'ต.ค.',total:18,isch:14,hemo:4,sft:15,sftInh:3,rtpa:4,rtpaInh:1,dI:1,dH:1,dR:0,riI:2,riH:1,roI:1,roH:0,dnt:52,d60:3,d45:1,dntInh:38,mtC:2,mtG:2,mtD:1},
-  {m:'พ.ย.',total:21,isch:16,hemo:5,sft:17,sftInh:4,rtpa:5,rtpaInh:1,dI:1,dH:2,dR:0,riI:2,riH:1,roI:1,roH:0,dnt:49,d60:4,d45:2,dntInh:36,mtC:2,mtG:2,mtD:2},
-  {m:'ธ.ค.',total:19,isch:14,hemo:5,sft:16,sftInh:3,rtpa:4,rtpaInh:1,dI:0,dH:1,dR:0,riI:2,riH:1,roI:1,roH:1,dnt:51,d60:3,d45:2,dntInh:37,mtC:2,mtG:2,mtD:1},
-  {m:'ม.ค.',total:22,isch:17,hemo:5,sft:18,sftInh:4,rtpa:5,rtpaInh:2,dI:1,dH:1,dR:0,riI:2,riH:1,roI:1,roH:1,dnt:46,d60:4,d45:2,dntInh:35,mtC:3,mtG:2,mtD:2},
-  {m:'ก.พ.',total:17,isch:12,hemo:5,sft:14,sftInh:3,rtpa:4,rtpaInh:1,dI:0,dH:1,dR:0,riI:2,riH:1,roI:1,roH:0,dnt:48,d60:3,d45:2,dntInh:36,mtC:2,mtG:2,mtD:2},
-  {m:'มี.ค.',total:24,isch:18,hemo:6,sft:20,sftInh:4,rtpa:6,rtpaInh:2,dI:1,dH:1,dR:1,riI:2,riH:1,roI:1,roH:1,dnt:44,d60:5,d45:3,dntInh:33,mtC:3,mtG:3,mtD:2},
-  {m:'เม.ย.',total:20,isch:15,hemo:5,sft:16,sftInh:3,rtpa:5,rtpaInh:1,dI:1,dH:1,dR:0,riI:2,riH:1,roI:1,roH:1,dnt:47,d60:4,d45:2,dntInh:36,mtC:3,mtG:2,mtD:2},
-  {m:'พ.ค.',total:23,isch:17,hemo:6,sft:19,sftInh:4,rtpa:6,rtpaInh:2,dI:1,dH:1,dR:1,riI:2,riH:0,roI:1,roH:1,dnt:45,d60:5,d45:3,dntInh:34,mtC:3,mtG:2,mtD:2},
-  {m:'มิ.ย.',total:21,isch:16,hemo:5,sft:17,sftInh:3,rtpa:5,rtpaInh:1,dI:1,dH:1,dR:0,riI:2,riH:0,roI:1,roH:0,dnt:47,d60:4,d45:2,dntInh:36,mtC:2,mtG:2,mtD:1},
-  {m:'ก.ค.',total:25,isch:18,hemo:7,sft:21,sftInh:5,rtpa:6,rtpaInh:2,dI:1,dH:1,dR:1,riI:3,riH:1,roI:1,roH:1,dnt:43,d60:5,d45:3,dntInh:32,mtC:3,mtG:3,mtD:2},
-  {m:'ส.ค.',total:22,isch:16,hemo:6,sft:18,sftInh:4,rtpa:5,rtpaInh:1,dI:1,dH:0,dR:0,riI:2,riH:0,roI:1,roH:0,dnt:46,d60:4,d45:2,dntInh:35,mtC:3,mtG:2,mtD:1},
-  {m:'ก.ย.',total:26,isch:19,hemo:7,sft:22,sftInh:5,rtpa:6,rtpaInh:2,dI:1,dH:1,dR:0,riI:2,riH:0,roI:1,roH:0,dnt:44,d60:5,d45:3,dntInh:33,mtC:3,mtG:3,mtD:2},
-];
+// ข้อมูลจริงจาก Google Sheet (โหลดเมื่อเปิดแอป)
+let REAL_DATA = [];
+let dataLoaded = false;
 
-function getData(){ return D69; }
+const SHEET_ID = '14bu2HUB5G3Esfmv5A43t5l5ukqE1GWIOjQwWTXWQIYE';
+const GID = '0';
+
+// โหลดข้อมูลจาก Google Sheet โดยตรง (CSV export)
+async function loadSheetData() {
+  const csvUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${GID}`;
+  const indicator = document.getElementById('data-load-indicator');
+  try {
+    if(indicator) { indicator.style.display='block'; indicator.textContent='⏳ กำลังโหลดข้อมูลจาก Google Sheet...'; indicator.style.background='#FEF3C7'; indicator.style.color='#92400E'; }
+    const res = await fetch(csvUrl);
+    const csv = await res.text();
+    const rows = csv.trim().split('\n').slice(1); // ข้าม header row
+    REAL_DATA = [];
+    rows.forEach(function(row) {
+      if(!row.trim()) return;
+      // parse CSV (รองรับ comma ใน quotes)
+      var cols = [];
+      var cur = '', inQ = false;
+      for(var i=0; i<row.length; i++){
+        if(row[i]==='"'){ inQ=!inQ; }
+        else if(row[i]===','&&!inQ){ cols.push(cur.trim()); cur=''; }
+        else { cur+=row[i]; }
+      }
+      cols.push(cur.trim());
+      var total = Number(cols[3])||0;
+      if(total===0) return; // ข้ามแถวว่าง
+      REAL_DATA.push({
+        m      : cols[2]||'',        // เดือน
+        fy     : cols[1]||'',        // ปีงบ
+        total  : total,
+        isch   : Number(cols[4])||0,
+        hemo   : Number(cols[5])||0,
+        sft    : Number(cols[6])||0,
+        sftInh : Number(cols[7])||0,
+        rtpa   : Number(cols[8])||0,
+        rtpaInh: Number(cols[9])||0,
+        dI     : Number(cols[10])||0,
+        dH     : Number(cols[11])||0,
+        dR     : Number(cols[12])||0,
+        riI    : Number(cols[13])||0,
+        riH    : Number(cols[14])||0,
+        roI    : Number(cols[15])||0,
+        roH    : Number(cols[16])||0,
+        dnt    : Number(cols[17])||0,
+        d60    : Number(cols[18])||0,
+        d45    : Number(cols[19])||0,
+        dntInh : Number(cols[20])||0,
+        mtC    : Number(cols[21])||0,
+        mtG    : Number(cols[22])||0,
+        mtD    : Number(cols[23])||0,
+      });
+    });
+    dataLoaded = true;
+    if(indicator) {
+      if(REAL_DATA.length > 0) {
+        indicator.textContent='✅ โหลดข้อมูลจริงสำเร็จ '+REAL_DATA.length+' แถว จาก Google Sheet';
+        indicator.style.background='#D1FAE5'; indicator.style.color='#065F46';
+        setTimeout(()=>indicator.style.display='none', 5000);
+        var ds=document.getElementById('data-status'); if(ds) ds.textContent='✅ ข้อมูลจริง '+REAL_DATA.length+' เดือน';
+      } else {
+        indicator.textContent='⚠️ ยังไม่มีข้อมูลใน Google Sheet — กรุณาบันทึกข้อมูลก่อน';
+        indicator.style.background='#FEF3C7'; indicator.style.color='#92400E';
+      }
+    }
+    // refresh charts ด้วยข้อมูลจริง
+    initDash();
+    renderTable();
+  } catch(err) {
+    dataLoaded = false;
+    if(indicator) {
+      indicator.textContent='❌ โหลดข้อมูลไม่ได้: '+err.message+' (Sheet ต้องตั้งเป็น Public)';
+      indicator.style.background='#FEE2E2'; indicator.style.color='#B91C1C';
+    }
+  }
+}
+
+function getData(){
+  // ถ้ามีข้อมูลจริงใช้ข้อมูลจริง ถ้ายังไม่มีใช้ข้อมูลตัวอย่าง
+  if(dataLoaded && REAL_DATA.length > 0) return REAL_DATA;
+  return [
+    {m:'ต.ค.',total:0,isch:0,hemo:0,sft:0,sftInh:0,rtpa:0,rtpaInh:0,dI:0,dH:0,dR:0,riI:0,riH:0,roI:0,roH:0,dnt:0,d60:0,d45:0,dntInh:0,mtC:0,mtG:0,mtD:0},
+  ];
+}
 function sum(arr,k){ return arr.reduce((a,x)=>a+(x[k]||0),0); }
 function avg(arr,k){ return Math.round(arr.reduce((a,x)=>a+(x[k]||0),0)/arr.length); }
 
@@ -1388,7 +1463,7 @@ function copyScript(){
 function sendPrompt(t){ alert('💡 หัวข้อ CQI: '+t+'\n\nคัดลอกข้อความนี้ไปถามใน Claude เพื่อรับ template ละเอียด'); }
 
 // ===== INIT =====
-window.addEventListener('load', ()=>{ setTimeout(initDash,100); });
+window.addEventListener('load', function(){ setTimeout(function(){ initDash(); loadSheetData(); }, 100); });
 </script>
 </body>
 </html>
