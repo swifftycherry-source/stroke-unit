@@ -133,8 +133,9 @@ tr:hover td{background:#F8F9FF}
     <p>ระบบบันทึกและวิเคราะห์ข้อมูลผู้ป่วย Stroke • ปีงบประมาณ 2569</p>
   </div>
   <div class="header-actions">
-    <button class="btn btn-outline" onclick="openGSheetModal()">📊 Google Sheet</button>
-    <button class="btn btn-white" onclick="showSection('form')">+ บันทึกผู้ป่วย</button>
+    <button class="btn btn-outline" onclick="openGSheetModal()" style="cursor:pointer">📊 Google Sheet</button>
+    <button class="btn btn-outline" onclick="exportAllToExcel()" style="cursor:pointer">📥 Export Excel</button>
+    <button class="btn btn-white" onclick="showSection('form')" style="cursor:pointer">+ บันทึกผู้ป่วย</button>
   </div>
 </div>
 
@@ -686,7 +687,7 @@ function doGet(e) {
     </div>
     <div class="form-group">
       <label style="font-size:12px;font-weight:700;color:var(--text2)">Google Apps Script Web App URL</label>
-      <input type="text" id="gasUrl" style="width:100%;margin-top:4px" placeholder="https://script.google.com/macros/s/.../exec">
+      <input type="text" id="gasUrl" style="width:100%;margin-top:4px" placeholder="https://script.google.com/macros/s/.../exec" value="https://script.google.com/macros/s/AKfycbyeqenbov8XhsI-TGDH0GI40oVc180TDt8r5xAza4M/dev">
     </div>
     <div class="gs-info">
       <strong>ขั้นตอนการตั้งค่า:</strong><br>
@@ -726,7 +727,7 @@ const defaultData=[
 ];
 
 let allData=JSON.parse(localStorage.getItem('strokeData2')||JSON.stringify(defaultData));
-let gasWebhookUrl=localStorage.getItem('gasUrl')||'';
+let gasWebhookUrl=localStorage.getItem('gasUrl')||'https://script.google.com/macros/s/AKfycbyeqenbov8XhsI-TGDH0GI40oVc180TDt8r5xAza4M/dev';
 let gsSheetUrl=localStorage.getItem('gsUrl')||'';
 let charts={};
 
@@ -1581,6 +1582,77 @@ function exportGSheet(){
   fetch(url,{method:'POST',body:JSON.stringify(entry),mode:'no-cors'})
     .then(()=>{msg.innerHTML=`<div class="alert-success">📊 ส่งข้อมูลไปยัง Google Sheet สำเร็จ!</div>`;})
     .catch(()=>{msg.innerHTML=`<div class="alert-success">📊 ส่งคำสั่งแล้ว (ตรวจสอบใน Google Sheet)</div>`;});
+}
+
+
+// ========= EXPORT EXCEL =========
+function exportAllToExcel(){
+  const fy = document.getElementById('fySelect')?.value || '2569';
+  const rows = getMonthRows(fy);
+  
+  // Build CSV content
+  const headers = [
+    'ปีงบประมาณ','เดือน','ไตรมาส',
+    'Ischemic','Hemorrhagic','SFT_ทั้งหมด','SFT_in-hospital','Stroke_ใน_รพ',
+    'rt-PA',
+    'เสียชีวิต_Is','เสียชีวิต_He','เสียชีวิต_rtPA',
+    'ReferIn_Is','ReferIn_He','ReferOut_Is','ReferOut_He',
+    'MT_ติดต่อ','MT_Refer','MT_ทำ',
+    'DNT_rtPA_avg','DNT_ทั้งหมด_avg','DNT_lt60','DNT_lt45','DNT_min','DNT_max'
+  ];
+  
+  const dataRows = rows.map(r => [
+    r.fy||fy, MONTHS[MONTH_NUMS.indexOf(r.month)], getQ(r.month),
+    r.ischemic||0, r.hemorrhagic||0, r.sft||0, r.sft_inhos||0, r.total_inhos||0,
+    r.rtpa||0,
+    r.dead_is||0, r.dead_he||0, r.dead_rtpa||0,
+    r.refin_is||0, r.refin_he||0, r.refout_is||0, r.refout_he||0,
+    r.mt_contact||0, r.mt_refer||0, r.mt_done||0,
+    r.dnt_avg||0, r.dnt_avg_all||0, r.dnt60||0, r.dnt45||0, r.dnt_min||0, r.dnt_max||0
+  ]);
+  
+  // BOM for Thai characters
+  const BOM = '\uFEFF';
+  const csv = BOM + [headers, ...dataRows].map(row =>
+    row.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')
+  ).join('\n');
+  
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `StrokeUnit_นครปฐม_${fy}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  
+  // Show success message
+  const existing = document.getElementById('saveMsg');
+  if(existing){
+    existing.style.display='block';
+    existing.innerHTML='<div class="alert-success">📥 Export Excel สำเร็จ! ไฟล์ StrokeUnit_นครปฐม_'+fy+'.csv</div>';
+    setTimeout(()=>existing.style.display='none',3000);
+  }
+}
+
+// ========= GOOGLE SHEET MODAL =========
+const DEFAULT_GAS = 'https://script.google.com/macros/s/AKfycbyeqenbov8XhsI-TGDH0GI40oVc180TDt8r5xAza4M/dev';
+
+function openGSheetModal(){
+  document.getElementById('gsModal').classList.add('show');
+  document.getElementById('gsUrl').value = gsSheetUrl||'';
+  document.getElementById('gasUrl').value = gasWebhookUrl||DEFAULT_GAS;
+}
+function closeGSheetModal(){
+  document.getElementById('gsModal').classList.remove('show');
+}
+function saveGSSettings(){
+  gsSheetUrl  = document.getElementById('gsUrl').value;
+  gasWebhookUrl = document.getElementById('gasUrl').value || DEFAULT_GAS;
+  localStorage.setItem('gsUrl', gsSheetUrl);
+  localStorage.setItem('gasUrl', gasWebhookUrl);
+  document.getElementById('gsMsg').innerHTML =
+    '<span style="color:var(--green2)">✅ บันทึกการตั้งค่าแล้ว</span>';
+  setTimeout(closeGSheetModal, 1500);
 }
 
 // Init
