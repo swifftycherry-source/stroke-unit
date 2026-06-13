@@ -263,10 +263,30 @@ tr:hover td{background:#F8F9FF}
       <div class="form-grid">
         <div class="form-group"><label>Ischemic Stroke (ราย)</label><input type="number" id="f_ischemic" min="0" value="0"></div>
         <div class="form-group"><label>Hemorrhagic Stroke (ราย)</label><input type="number" id="f_hemorrhagic" min="0" value="0"></div>
-        <div class="form-group"><label>เข้าระบบ SFT ทั้งหมด (ราย)</label><input type="number" id="f_sft" min="0" value="0"></div>
+      </div>
+    </div>
+
+    <div class="form-section" style="border-left:4px solid #1565C0">
+      <div class="form-section-title">🏥 Stroke In-Hospital</div>
+      <div class="form-grid">
+        <div class="form-group"><label>Stroke ใน รพ. ทั้งหมด (ราย)</label><input type="number" id="f_total_inhos" min="0" value="0"></div>
+        <div class="form-group"><label>└ Stroke in-hos ที่ได้ rt-PA (ราย)</label><input type="number" id="f_rtpa_inhos" min="0" value="0"></div>
+        <div class="form-group"><label>└ DNT เฉลี่ย Stroke in-hos (นาที)</label><input type="number" id="f_dnt_inhos" min="0" value="0"></div>
+      </div>
+    </div>
+
+    <div class="form-section" style="border-left:4px solid #43A047">
+      <div class="form-section-title">⚡ Stroke Fast Track (SFT)</div>
+      <div class="form-grid">
+        <div class="form-group"><label>SFT ทั้งหมด (ราย)</label><input type="number" id="f_sft" min="0" value="0"></div>
         <div class="form-group"><label>SFT in-hospital (ราย)</label><input type="number" id="f_sft_inhos" min="0" value="0"></div>
-        <div class="form-group"><label>ได้รับยา rt-PA (ราย)</label><input type="number" id="f_rtpa" min="0" value="0"></div>
-        <div class="form-group"><label>ผู้ป่วย Stroke ใน รพ. ทั้งหมด (ราย)</label><input type="number" id="f_total_inhos" min="0" value="0"></div>
+        <div class="form-group"><label>└ SFT ที่ได้ rt-PA (ราย)</label><input type="number" id="f_rtpa" min="0" value="0"></div>
+        <div class="form-group"><label>└ DNT เฉลี่ย SFT rt-PA (นาที)</label><input type="number" id="f_dnt_avg" min="0" value="0"></div>
+        <div class="form-group"><label>└ DNT เฉลี่ยรวมทั้งหมด (นาที)</label><input type="number" id="f_dnt_avg_all" min="0" value="0"></div>
+        <div class="form-group"><label>└ DNT &lt;45 นาที (ราย)</label><input type="number" id="f_dnt45" min="0" value="0"></div>
+        <div class="form-group"><label>└ DNT &lt;60 นาที (ราย)</label><input type="number" id="f_dnt60" min="0" value="0"></div>
+        <div class="form-group"><label>└ DNT น้อยที่สุด (นาที)</label><input type="number" id="f_dnt_min" min="0" value="0"></div>
+        <div class="form-group"><label>└ DNT มากที่สุด (นาที)</label><input type="number" id="f_dnt_max" min="0" value="0"></div>
       </div>
     </div>
 
@@ -298,24 +318,74 @@ tr:hover td{background:#F8F9FF}
       </div>
     </div>
 
-    <div class="form-section">
-      <div class="form-section-title">⏱ Door-to-Needle Time (DNT)</div>
-      <div class="form-grid">
-        <div class="form-group"><label>DNT เฉลี่ย ผู้ป่วย rt-PA (นาที)</label><input type="number" id="f_dnt_avg" min="0" value="0"></div>
-        <div class="form-group"><label>DNT เฉลี่ย ผู้ป่วยทั้งหมด (นาที)</label><input type="number" id="f_dnt_avg_all" min="0" value="0"></div>
-        <div class="form-group"><label>จำนวน DNT &lt;60 นาที (ราย)</label><input type="number" id="f_dnt60" min="0" value="0"></div>
-        <div class="form-group"><label>จำนวน DNT &lt;45 นาที (ราย)</label><input type="number" id="f_dnt45" min="0" value="0"></div>
-        <div class="form-group"><label>DNT น้อยที่สุด (นาที)</label><input type="number" id="f_dnt_min" min="0" value="0"></div>
-        <div class="form-group"><label>DNT มากที่สุด (นาที)</label><input type="number" id="f_dnt_max" min="0" value="0"></div>
-      </div>
-    </div>
+
 
     <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px">
       <button class="btn" style="background:var(--green2);color:#fff;flex:1;min-width:160px;justify-content:center" onclick="saveData()">💾 บันทึกข้อมูล</button>
       <button class="btn" style="background:var(--orange2);color:#fff" onclick="clearForm()">🗑 ล้างฟอร์ม</button>
-      <button class="btn" style="background:var(--blue);color:#fff" onclick="exportGSheet()">📊 ส่ง Google Sheet</button>
+      <button class="btn" style="background:var(--blue);color:#fff" onclick="exportGSheet()">📊 ส่งเดือนนี้ → Sheet</button>
+    </div>
+    <div style="margin-top:8px">
+      <button class="btn" style="background:var(--purple2);color:#fff;width:100%;justify-content:center;font-size:14px;padding:10px" onclick="sendAllToGSheet()">
+        📤 ส่งข้อมูลทั้งหมดที่บันทึกไว้ → Google Sheet (ทุกเดือน)
+      </button>
     </div>
     <div id="saveMsg" style="display:none;margin-top:10px"></div>
+  </div>
+
+
+  <!-- Import Section -->
+  <div class="card" style="margin-top:14px">
+    <div class="card-title">📥 นำเข้าข้อมูล / แก้ไขข้อมูล</div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px">
+
+      <!-- Import from Google Sheet -->
+      <div style="background:#E3F2FD;border-radius:10px;padding:14px;border:1.5px solid #1565C0">
+        <div style="font-size:13px;font-weight:700;color:#1565C0;margin-bottom:8px">📊 นำเข้าจาก Google Sheet</div>
+        <p style="font-size:12px;color:#1565C0;margin-bottom:10px">ดึงข้อมูลที่บันทึกใน Google Sheet กลับมาแก้ไขใน App</p>
+        <button class="btn" style="background:#1565C0;color:#fff;width:100%;justify-content:center" onclick="importFromGSheet()">
+          📥 ดึงข้อมูลจาก Google Sheet
+        </button>
+        <div id="importMsg" style="margin-top:8px;font-size:12px"></div>
+      </div>
+
+      <!-- Upload JSON/CSV -->
+      <div style="background:#E8F5E9;border-radius:10px;padding:14px;border:1.5px solid #2E7D32">
+        <div style="font-size:13px;font-weight:700;color:#2E7D32;margin-bottom:8px">📂 นำเข้าจากไฟล์ (JSON/CSV)</div>
+        <p style="font-size:12px;color:#2E7D32;margin-bottom:10px">อัปโหลดไฟล์ข้อมูลที่ Export ไว้ก่อนหน้า</p>
+        <input type="file" id="importFile" accept=".json,.csv" style="display:none" onchange="handleImportFile(event)">
+        <button class="btn" style="background:#2E7D32;color:#fff;width:100%;justify-content:center" onclick="document.getElementById('importFile').click()">
+          📂 เลือกไฟล์ JSON/CSV
+        </button>
+      </div>
+
+      <!-- Export for backup -->
+      <div style="background:#F3E5F5;border-radius:10px;padding:14px;border:1.5px solid #6A1B9A">
+        <div style="font-size:13px;font-weight:700;color:#6A1B9A;margin-bottom:8px">💾 สำรองข้อมูล (Backup)</div>
+        <p style="font-size:12px;color:#6A1B9A;margin-bottom:10px">Export ข้อมูลทั้งหมดเป็นไฟล์ JSON เพื่อสำรองและนำเข้าใหม่</p>
+        <button class="btn" style="background:#6A1B9A;color:#fff;width:100%;justify-content:center" onclick="exportBackupJSON()">
+          💾 Export Backup JSON
+        </button>
+      </div>
+    </div>
+
+    <!-- ตารางแก้ไขข้อมูล -->
+    <div style="margin-top:14px">
+      <div style="font-size:13px;font-weight:700;color:var(--text2);margin-bottom:8px">✏️ ตารางข้อมูลที่บันทึกไว้ (คลิกแถวเพื่อแก้ไข)</div>
+      <div class="scroll-x">
+        <table id="editTable">
+          <thead><tr>
+            <th>ปีงบ</th><th>เดือน</th><th>Q</th>
+            <th>Ischemic</th><th>Hemorrhagic</th><th>rt-PA</th>
+            <th>เสียชีวิต Is.</th><th>เสียชีวิต He.</th>
+            <th>DNT เฉลี่ย</th><th>MT ทำ</th>
+            <th>แก้ไข</th><th>ลบ</th>
+          </tr></thead>
+          <tbody id="editTableBody"></tbody>
+        </table>
+      </div>
+    </div>
   </div>
 
   <div class="card">
@@ -330,7 +400,8 @@ tr:hover td{background:#F8F9FF}
     sheet.appendRow([
       'ปีงบ','เดือน','ไตรมาส',
       'Ischemic','Hemorrhagic',
-      'SFT_ทั้งหมด','SFT_in-hospital','Stroke_ใน_รพ_ทั้งหมด',
+      'Stroke_ใน_รพ_ทั้งหมด','Stroke_inhos_ได้_rtPA','DNT_inhos_avg',
+      'SFT_ทั้งหมด','SFT_in-hospital',
       'rt-PA',
       'เสียชีวิต_Is','เสียชีวิต_He','เสียชีวิต_rtPA',
       'ReferIn_Is','ReferIn_He','ReferOut_Is','ReferOut_He',
@@ -345,7 +416,8 @@ tr:hover td{background:#F8F9FF}
   sheet.appendRow([
     data.fy, data.month, data.quarter,
     data.ischemic, data.hemorrhagic,
-    data.sft, data.sft_inhos||0, data.total_inhos||0,
+    data.total_inhos||0, data.rtpa_inhos||0, data.dnt_inhos||0,
+    data.sft, data.sft_inhos||0,
     data.rtpa,
     data.dead_is, data.dead_he, data.dead_rtpa,
     data.refin_is, data.refin_he, data.refout_is, data.refout_he,
@@ -755,6 +827,7 @@ function showSection(sec){
   if(sec==='dashboard')updateDashboard();
   else if(sec==='monthly')renderMonthly();
   else if(sec==='quarterly')renderQuarterly();
+  if(sec==='form')setTimeout(renderEditTable,100);
   else if(sec==='mt')renderMT();
   else if(sec==='compare')renderCompare();
 }
@@ -1509,6 +1582,8 @@ function saveData(){
     hemorrhagic:+document.getElementById('f_hemorrhagic').value,
     sft:+document.getElementById('f_sft').value,
     sft_inhos:+document.getElementById('f_sft_inhos').value,
+    rtpa_inhos:+document.getElementById('f_rtpa_inhos').value,
+    dnt_inhos:+document.getElementById('f_dnt_inhos').value,
     total_inhos:+document.getElementById('f_total_inhos').value,
     rtpa:+document.getElementById('f_rtpa').value,
     dead_is:+document.getElementById('f_dead_is').value,
@@ -1521,6 +1596,8 @@ function saveData(){
     mt_contact:+document.getElementById('f_mt_contact').value,
     mt_refer:+document.getElementById('f_mt_refer').value,
     mt_done:+document.getElementById('f_mt_done').value,
+    rtpa_inhos:+document.getElementById('f_rtpa_inhos').value,
+    dnt_inhos:+document.getElementById('f_dnt_inhos').value,
     dnt_avg:+document.getElementById('f_dnt_avg').value,
     dnt_avg_all:+document.getElementById('f_dnt_avg_all').value,
     dnt60:+document.getElementById('f_dnt60').value,
@@ -1538,7 +1615,7 @@ function saveData(){
 }
 
 function clearForm(){
-  ['f_ischemic','f_hemorrhagic','f_sft','f_sft_inhos','f_total_inhos','f_rtpa',
+  ['f_ischemic','f_hemorrhagic','f_sft','f_sft_inhos','f_total_inhos','f_rtpa','f_rtpa_inhos','f_dnt_inhos',
    'f_dead_is','f_dead_he','f_dead_rtpa',
    'f_refin_is','f_refin_he','f_refout_is','f_refout_he',
    'f_mt_contact','f_mt_refer','f_mt_done',
@@ -1557,6 +1634,8 @@ function exportGSheet(){
     hemorrhagic:+document.getElementById('f_hemorrhagic').value,
     sft:+document.getElementById('f_sft').value,
     sft_inhos:+document.getElementById('f_sft_inhos').value,
+    rtpa_inhos:+document.getElementById('f_rtpa_inhos').value,
+    dnt_inhos:+document.getElementById('f_dnt_inhos').value,
     total_inhos:+document.getElementById('f_total_inhos').value,
     rtpa:+document.getElementById('f_rtpa').value,
     dead_is:+document.getElementById('f_dead_is').value,
@@ -1569,6 +1648,8 @@ function exportGSheet(){
     mt_contact:+document.getElementById('f_mt_contact').value,
     mt_refer:+document.getElementById('f_mt_refer').value,
     mt_done:+document.getElementById('f_mt_done').value,
+    rtpa_inhos:+document.getElementById('f_rtpa_inhos').value,
+    dnt_inhos:+document.getElementById('f_dnt_inhos').value,
     dnt_avg:+document.getElementById('f_dnt_avg').value,
     dnt_avg_all:+document.getElementById('f_dnt_avg_all').value,
     dnt60:+document.getElementById('f_dnt60').value,
@@ -1634,6 +1715,224 @@ function exportAllToExcel(){
   }
 }
 
+
+// ========= SEND ALL DATA TO GOOGLE SHEET =========
+async function sendAllToGSheet(){
+  const url = gasWebhookUrl || DEFAULT_GAS;
+  const data = allData.filter(d => d.ischemic > 0 || d.hemorrhagic > 0 || d.rtpa > 0);
+  
+  if(data.length === 0){
+    alert('ยังไม่มีข้อมูลที่บันทึกไว้ กรุณาบันทึกข้อมูลก่อนครับ');
+    return;
+  }
+
+  const msg = document.getElementById('saveMsg');
+  msg.style.display = 'block';
+  msg.innerHTML = `<div class="alert-info">📤 กำลังส่งข้อมูลทั้งหมด ${data.length} เดือน ไป Google Sheet...</div>`;
+
+  let success = 0; let fail = 0;
+  for(const entry of data){
+    try{
+      const payload = {
+        fy: entry.fy, month: entry.month, quarter: getQ(entry.month),
+        ischemic: entry.ischemic||0, hemorrhagic: entry.hemorrhagic||0,
+        sft: entry.sft||0, sft_inhos: entry.sft_inhos||0, total_inhos: entry.total_inhos||0,
+        rtpa_inhos: entry.rtpa_inhos||0, dnt_inhos: entry.dnt_inhos||0,
+        rtpa: entry.rtpa||0,
+        dead_is: entry.dead_is||0, dead_he: entry.dead_he||0, dead_rtpa: entry.dead_rtpa||0,
+        refin_is: entry.refin_is||0, refin_he: entry.refin_he||0,
+        refout_is: entry.refout_is||0, refout_he: entry.refout_he||0,
+        mt_contact: entry.mt_contact||0, mt_refer: entry.mt_refer||0, mt_done: entry.mt_done||0,
+        dnt_avg: entry.dnt_avg||0, dnt_avg_all: entry.dnt_avg_all||0,
+        dnt60: entry.dnt60||0, dnt45: entry.dnt45||0,
+        dnt_min: entry.dnt_min||0, dnt_max: entry.dnt_max||0,
+      };
+      await fetch(url, {method:'POST', body:JSON.stringify(payload), mode:'no-cors'});
+      success++;
+      msg.innerHTML = `<div class="alert-info">📤 กำลังส่ง... ${success}/${data.length} เดือน</div>`;
+      // หน่วงเวลาเล็กน้อยป้องกัน quota เกิน
+      await new Promise(r => setTimeout(r, 500));
+    } catch(e){ fail++; }
+  }
+
+  msg.innerHTML = `<div class="alert-success">✅ ส่งข้อมูลสำเร็จ ${success} เดือน${fail>0?' (ล้มเหลว '+fail+' เดือน)':''} → Google Sheet แล้วครับ!</div>`;
+  setTimeout(()=>msg.style.display='none', 5000);
+}
+
+
+// ========= IMPORT / EXPORT / EDIT TABLE =========
+
+function renderEditTable(){
+  const fy = document.getElementById('f_fy')?.value || '2569';
+  const rows = allData.filter(d=>d.fy===fy).sort((a,b)=>{
+    return MONTH_NUMS.indexOf(a.month) - MONTH_NUMS.indexOf(b.month);
+  });
+  if(!document.getElementById('editTableBody')) return;
+  document.getElementById('editTableBody').innerHTML = rows.map((r,i)=>{
+    const mi = MONTH_NUMS.indexOf(r.month);
+    const q = getQ(r.month);
+    return `<tr style="cursor:pointer" onclick="loadRowToForm('${r.fy}',${r.month})">
+      <td>${r.fy}</td>
+      <td><strong>${MONTHS[mi]}</strong></td>
+      <td><span class="quarter-badge ${QBADGE[q]}">${q}</span></td>
+      <td>${r.ischemic||0}</td><td>${r.hemorrhagic||0}</td>
+      <td style="color:var(--orange2);font-weight:700">${r.rtpa||0}</td>
+      <td style="color:var(--red2)">${r.dead_is||0}</td>
+      <td style="color:var(--red)">${r.dead_he||0}</td>
+      <td style="color:${(r.dnt_avg||0)<=60?'var(--green2)':'var(--red2)'};font-weight:700">${r.dnt_avg||'-'}</td>
+      <td>${r.mt_done||0}</td>
+      <td><button class="btn" style="background:var(--blue);color:#fff;padding:4px 10px;font-size:11px" onclick="event.stopPropagation();loadRowToForm('${r.fy}',${r.month})">✏️ แก้ไข</button></td>
+      <td><button class="btn" style="background:var(--red2);color:#fff;padding:4px 10px;font-size:11px" onclick="event.stopPropagation();deleteRow('${r.fy}',${r.month})">🗑</button></td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="12" style="text-align:center;color:var(--text3);padding:20px">ยังไม่มีข้อมูลสำหรับปีงบประมาณนี้</td></tr>';
+}
+
+function loadRowToForm(fy, month){
+  const r = allData.find(d=>d.fy===fy && d.month===+month);
+  if(!r) return;
+  document.getElementById('f_fy').value = r.fy;
+  document.getElementById('f_month').value = r.month;
+  const fields = ['ischemic','hemorrhagic','sft','sft_inhos','total_inhos',
+    'rtpa','rtpa_inhos','dnt_inhos','dead_is','dead_he','dead_rtpa',
+    'refin_is','refin_he','refout_is','refout_he',
+    'mt_contact','mt_refer','mt_done',
+    'dnt_avg','dnt_avg_all','dnt60','dnt45','dnt_min','dnt_max'];
+  fields.forEach(f=>{
+    const el = document.getElementById('f_'+f);
+    if(el) el.value = r[f]||0;
+  });
+  // Scroll to form top
+  document.getElementById('sec-form').scrollTop = 0;
+  window.scrollTo({top:0, behavior:'smooth'});
+  const msg = document.getElementById('saveMsg');
+  msg.style.display='block';
+  msg.innerHTML='<div class="alert-info">✏️ โหลดข้อมูล '+MONTHS[MONTH_NUMS.indexOf(+month)]+' แล้ว แก้ไขและกด 💾 บันทึกได้เลย</div>';
+}
+
+function deleteRow(fy, month){
+  if(!confirm('ลบข้อมูลเดือน '+MONTHS[MONTH_NUMS.indexOf(+month)]+' ปี '+fy+' ?')) return;
+  allData = allData.filter(d=>!(d.fy===fy && d.month===+month));
+  localStorage.setItem('strokeData2', JSON.stringify(allData));
+  renderEditTable();
+}
+
+async function importFromGSheet(){
+  const url = gasWebhookUrl || DEFAULT_GAS;
+  const msg = document.getElementById('importMsg');
+  msg.innerHTML = '<span style="color:var(--blue)">⏳ กำลังดึงข้อมูลจาก Google Sheet...</span>';
+  try{
+    const res = await fetch(url + '?action=getAll', {method:'GET', mode:'cors'});
+    const raw = await res.json();
+    if(!Array.isArray(raw) || raw.length < 2){
+      msg.innerHTML = '<span style="color:var(--red2)">❌ ไม่พบข้อมูลใน Sheet หรือ Sheet ว่างเปล่า</span>';
+      return;
+    }
+    const headers = raw[0];
+    const dataRows = raw.slice(1);
+    let count = 0;
+    dataRows.forEach(row => {
+      if(!row[0] || !row[1]) return;
+      const entry = {
+        fy: String(row[0]), month: +row[1],
+        ischemic: +row[3]||0, hemorrhagic: +row[4]||0,
+        total_inhos: +row[5]||0, rtpa_inhos: +row[6]||0, dnt_inhos: +row[7]||0,
+        sft: +row[8]||0, sft_inhos: +row[9]||0,
+        rtpa: +row[10]||0,
+        dead_is: +row[11]||0, dead_he: +row[12]||0, dead_rtpa: +row[13]||0,
+        refin_is: +row[14]||0, refin_he: +row[15]||0,
+        refout_is: +row[16]||0, refout_he: +row[17]||0,
+        mt_contact: +row[18]||0, mt_refer: +row[19]||0, mt_done: +row[20]||0,
+        dnt_avg: +row[21]||0, dnt_avg_all: +row[22]||0,
+        dnt60: +row[23]||0, dnt45: +row[24]||0,
+        dnt_min: +row[25]||0, dnt_max: +row[26]||0,
+      };
+      const idx = allData.findIndex(d=>d.fy===entry.fy&&d.month===entry.month);
+      if(idx>=0) allData[idx]=entry; else allData.push(entry);
+      count++;
+    });
+    localStorage.setItem('strokeData2', JSON.stringify(allData));
+    renderEditTable();
+    msg.innerHTML = `<span style="color:var(--green2)">✅ นำเข้าข้อมูลสำเร็จ ${count} แถว!</span>`;
+  } catch(e){
+    msg.innerHTML = '<span style="color:var(--red2)">❌ ไม่สามารถดึงข้อมูลได้ กรุณาตรวจสอบ GAS URL และ CORS settings</span>';
+  }
+}
+
+function handleImportFile(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e){
+    try{
+      let imported;
+      if(file.name.endsWith('.json')){
+        imported = JSON.parse(e.target.result);
+      } else {
+        // CSV parse
+        const lines = e.target.result.split('\n').filter(l=>l.trim());
+        const headers = lines[0].split(',').map(h=>h.replace(/"/g,'').trim());
+        imported = lines.slice(1).map(line=>{
+          const vals = line.split(',').map(v=>v.replace(/"/g,'').trim());
+          const obj = {};
+          headers.forEach((h,i)=>obj[h]=vals[i]);
+          return {
+            fy: obj['ปีงบประมาณ']||obj['fy'],
+            month: +obj['เดือน']||+obj['month'],
+            ischemic: +obj['Ischemic']||0,
+            hemorrhagic: +obj['Hemorrhagic']||0,
+            rtpa: +obj['rt-PA']||0,
+            dead_is: +obj['เสียชีวิต_Is']||0,
+            dead_he: +obj['เสียชีวิต_He']||0,
+            dead_rtpa: +obj['เสียชีวิต_rtPA']||0,
+            sft: +obj['SFT_ทั้งหมด']||0,
+            sft_inhos: +obj['SFT_in-hospital']||0,
+            total_inhos: +obj['Stroke_ใน_รพ']||0,
+            dnt_avg: +obj['DNT_rtPA_avg']||0,
+            dnt_avg_all: +obj['DNT_ทั้งหมด_avg']||0,
+            dnt60: +obj['DNT_lt60']||0,
+            dnt45: +obj['DNT_lt45']||0,
+            dnt_min: +obj['DNT_min']||0,
+            dnt_max: +obj['DNT_max']||0,
+            mt_contact: +obj['MT_ติดต่อ']||0,
+            mt_refer: +obj['MT_Refer']||0,
+            mt_done: +obj['MT_ทำ']||0,
+            refin_is: +obj['ReferIn_Is']||0,
+            refin_he: +obj['ReferIn_He']||0,
+            refout_is: +obj['ReferOut_Is']||0,
+            refout_he: +obj['ReferOut_He']||0,
+          };
+        }).filter(r=>r.fy && r.month);
+      }
+      if(!Array.isArray(imported)) imported = [imported];
+      let count = 0;
+      imported.forEach(entry=>{
+        if(!entry.fy || !entry.month) return;
+        const idx = allData.findIndex(d=>d.fy===entry.fy&&d.month===+entry.month);
+        if(idx>=0) allData[idx]={...allData[idx],...entry};
+        else allData.push(entry);
+        count++;
+      });
+      localStorage.setItem('strokeData2', JSON.stringify(allData));
+      renderEditTable();
+      alert('✅ นำเข้าสำเร็จ '+count+' รายการ!');
+    } catch(err){
+      alert('❌ ไม่สามารถอ่านไฟล์ได้: '+err.message);
+    }
+  };
+  reader.readAsText(file, 'UTF-8');
+}
+
+function exportBackupJSON(){
+  const json = JSON.stringify(allData, null, 2);
+  const blob = new Blob([json], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'StrokeUnit_Backup_'+new Date().toISOString().slice(0,10)+'.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 // ========= GOOGLE SHEET MODAL =========
 const DEFAULT_GAS = 'https://script.google.com/macros/s/AKfycbyeqenbov8XhsI-TGDH0GI40oVc180TDt8r5xAza4M/dev';
 
@@ -1655,9 +1954,31 @@ function saveGSSettings(){
   setTimeout(closeGSheetModal, 1500);
 }
 
+// ========= MIGRATE OLD DATA + INIT FUNCTIONS =========
+function migrateOldData(){
+  // ดึงข้อมูลจาก key เก่า strokeData มาใช้ถ้ายังไม่มี strokeData2
+  try{
+    const old1 = localStorage.getItem('strokeData');
+    const old2 = localStorage.getItem('strokeData2');
+    if(old1 && !old2){
+      localStorage.setItem('strokeData2', old1);
+    }
+    // โหลดข้อมูลล่าสุด
+    const saved = localStorage.getItem('strokeData2');
+    if(saved){
+      const parsed = JSON.parse(saved);
+      if(Array.isArray(parsed) && parsed.length > 0){
+        allData = parsed;
+      }
+    }
+  } catch(e){ console.warn('migrate error:', e); }
+}
+
 // Init
 document.getElementById('f_date').valueAsDate=new Date();
+migrateOldData();
 updateDashboard();
+setTimeout(renderEditTable,200);
 document.getElementById('nav-compare').addEventListener('click', ()=>{
   setTimeout(()=>{
     // Show default KPI panel
