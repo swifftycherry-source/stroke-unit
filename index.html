@@ -434,10 +434,14 @@ tr:hover td{background:#F8F9FF}
 
 function doGet(e) {
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('StrokeData');
-  if(!sheet) return ContentService.createTextOutput('[]');
+  if(!sheet) return buildResponse('[]');
   var data = sheet.getDataRange().getValues();
+  return buildResponse(JSON.stringify(data));
+}
+
+function buildResponse(data) {
   return ContentService
-    .createTextOutput(JSON.stringify(data))
+    .createTextOutput(data)
     .setMimeType(ContentService.MimeType.JSON);
 }</code>
   </div>
@@ -1629,6 +1633,7 @@ function exportGSheet(){
   const entry={
     fy:document.getElementById('f_fy').value,
     month:+document.getElementById('f_month').value,
+    monthName:MONTHS[MONTH_NUMS.indexOf(+document.getElementById('f_month').value)],
     quarter:getQ(+document.getElementById('f_month').value),
     ischemic:+document.getElementById('f_ischemic').value,
     hemorrhagic:+document.getElementById('f_hemorrhagic').value,
@@ -1734,7 +1739,7 @@ async function sendAllToGSheet(){
   for(const entry of data){
     try{
       const payload = {
-        fy: entry.fy, month: entry.month, quarter: getQ(entry.month),
+        fy: entry.fy, month: entry.month, monthName: MONTHS[MONTH_NUMS.indexOf(entry.month)], quarter: getQ(entry.month),
         ischemic: entry.ischemic||0, hemorrhagic: entry.hemorrhagic||0,
         sft: entry.sft||0, sft_inhos: entry.sft_inhos||0, total_inhos: entry.total_inhos||0,
         rtpa_inhos: entry.rtpa_inhos||0, dnt_inhos: entry.dnt_inhos||0,
@@ -1819,21 +1824,40 @@ function deleteRow(fy, month){
 async function importFromGSheet(){
   const url = gasWebhookUrl || DEFAULT_GAS;
   const msg = document.getElementById('importMsg');
-  msg.innerHTML = '<span style="color:var(--blue)">⏳ กำลังดึงข้อมูลจาก Google Sheet...</span>';
+  msg.innerHTML = '<span style="color:var(--blue)">⏳ กำลังดึงข้อมูล...</span>';
+
+  // แปลงชื่อเดือนเป็นตัวเลข
+  const MONTH_NAME_MAP = {
+    'ต.ค.':10,'พ.ย.':11,'ธ.ค.':12,
+    'ม.ค.':1,'ก.พ.':2,'มี.ค.':3,
+    'เม.ย.':4,'พ.ค.':5,'มิ.ย.':6,
+    'ก.ค.':7,'ส.ค.':8,'ก.ย.':9
+  };
+
   try{
-    const res = await fetch(url + '?action=getAll', {method:'GET', mode:'cors'});
+    // ใช้ no-cors + script tag workaround สำหรับ GAS
+    const res = await fetch(url, {
+      method: 'GET',
+      redirect: 'follow'
+    });
     const raw = await res.json();
     if(!Array.isArray(raw) || raw.length < 2){
-      msg.innerHTML = '<span style="color:var(--red2)">❌ ไม่พบข้อมูลใน Sheet หรือ Sheet ว่างเปล่า</span>';
+      msg.innerHTML = '<span style="color:var(--red2)">❌ ไม่พบข้อมูลใน Sheet</span>';
       return;
     }
-    const headers = raw[0];
-    const dataRows = raw.slice(1);
+    const dataRows = raw.slice(1); // ข้าม header row
     let count = 0;
     dataRows.forEach(row => {
       if(!row[0] || !row[1]) return;
+      // แปลงเดือน — รองรับทั้งชื่อไทยและตัวเลข
+      let monthNum = +row[1];
+      if(isNaN(monthNum) || monthNum === 0){
+        monthNum = MONTH_NAME_MAP[String(row[1]).trim()] || 0;
+      }
+      if(!monthNum) return;
       const entry = {
-        fy: String(row[0]), month: +row[1],
+        fy: String(row[0]),
+        month: monthNum,
         ischemic: +row[3]||0, hemorrhagic: +row[4]||0,
         total_inhos: +row[5]||0, rtpa_inhos: +row[6]||0, dnt_inhos: +row[7]||0,
         sft: +row[8]||0, sft_inhos: +row[9]||0,
@@ -1846,15 +1870,25 @@ async function importFromGSheet(){
         dnt60: +row[23]||0, dnt45: +row[24]||0,
         dnt_min: +row[25]||0, dnt_max: +row[26]||0,
       };
-      const idx = allData.findIndex(d=>d.fy===entry.fy&&d.month===entry.month);
-      if(idx>=0) allData[idx]=entry; else allData.push(entry);
+      const idx = allData.findIndex(d=>d.fy===entry.fy && d.month===entry.month);
+      if(idx>=0) allData[idx]={...allData[idx],...entry};
+      else allData.push(entry);
       count++;
     });
     localStorage.setItem('strokeData2', JSON.stringify(allData));
     renderEditTable();
-    msg.innerHTML = `<span style="color:var(--green2)">✅ นำเข้าข้อมูลสำเร็จ ${count} แถว!</span>`;
+    updateDashboard();
+    msg.innerHTML = `<span style="color:var(--green2)">✅ นำเข้าสำเร็จ ${count} แถว! รีเฟรชแดชบอร์ดแล้ว</span>`;
   } catch(e){
-    msg.innerHTML = '<span style="color:var(--red2)">❌ ไม่สามารถดึงข้อมูลได้ กรุณาตรวจสอบ GAS URL และ CORS settings</span>';
+    // CORS error - แสดงวิธีแก้ไข
+    msg.innerHTML = `<div style="background:#FFEBEE;border-radius:8px;padding:10px;color:#C62828;font-size:12px">
+      ❌ CORS Error — ต้องแก้ GAS ก่อนครับ<br><br>
+      <strong>วิธีแก้:</strong><br>
+      1. เปิด Google Sheet → Extensions → Apps Script<br>
+      2. แทนที่โค้ดทั้งหมดด้วยโค้ดใหม่ด้านล่าง<br>
+      3. Deploy → Manage Deployments → Edit → Version: New → Deploy<br>
+      4. กลับมากด "ดึงข้อมูล" อีกครั้ง
+    </div>`;
   }
 }
 
