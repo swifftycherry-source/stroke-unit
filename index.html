@@ -434,14 +434,21 @@ tr:hover td{background:#F8F9FF}
 
 function doGet(e) {
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('StrokeData');
-  if(!sheet) return buildResponse('[]');
+  if(!sheet) return buildResponse('[]', e);
   var data = sheet.getDataRange().getValues();
-  return buildResponse(JSON.stringify(data));
+  return buildResponse(JSON.stringify(data), e);
 }
 
-function buildResponse(data) {
+function buildResponse(json, e) {
+  // รองรับ JSONP สำหรับมือถือ (bypass CORS)
+  var callback = e && e.parameter && e.parameter.callback;
+  if(callback){
+    return ContentService
+      .createTextOutput(callback + '(' + json + ')')
+      .setMimeType(ContentService.MimeType.JAVASCRIPT);
+  }
   return ContentService
-    .createTextOutput(data)
+    .createTextOutput(json)
     .setMimeType(ContentService.MimeType.JSON);
 }</code>
   </div>
@@ -1826,7 +1833,6 @@ async function importFromGSheet(){
   const msg = document.getElementById('importMsg');
   msg.innerHTML = '<span style="color:var(--blue)">⏳ กำลังดึงข้อมูล...</span>';
 
-  // แปลงชื่อเดือนเป็นตัวเลข
   const MONTH_NAME_MAP = {
     'ต.ค.':10,'พ.ย.':11,'ธ.ค.':12,
     'ม.ค.':1,'ก.พ.':2,'มี.ค.':3,
@@ -1834,30 +1840,26 @@ async function importFromGSheet(){
     'ก.ค.':7,'ส.ค.':8,'ก.ย.':9
   };
 
-  try{
-    // ใช้ no-cors + script tag workaround สำหรับ GAS
-    const res = await fetch(url, {
-      method: 'GET',
-      redirect: 'follow'
-    });
-    const raw = await res.json();
+  function processData(raw){
     if(!Array.isArray(raw) || raw.length < 2){
       msg.innerHTML = '<span style="color:var(--red2)">❌ ไม่พบข้อมูลใน Sheet</span>';
       return;
     }
-    const dataRows = raw.slice(1); // ข้าม header row
+    // ข้าม 2 header rows (group + column)
+    const dataRows = raw.filter(row => {
+      const fy = +row[0];
+      return fy >= 2560 && fy <= 2600;
+    });
     let count = 0;
     dataRows.forEach(row => {
       if(!row[0] || !row[1]) return;
-      // แปลงเดือน — รองรับทั้งชื่อไทยและตัวเลข
       let monthNum = +row[1];
       if(isNaN(monthNum) || monthNum === 0){
         monthNum = MONTH_NAME_MAP[String(row[1]).trim()] || 0;
       }
       if(!monthNum) return;
       const entry = {
-        fy: String(row[0]),
-        month: monthNum,
+        fy: String(row[0]), month: monthNum,
         ischemic: +row[3]||0, hemorrhagic: +row[4]||0,
         total_inhos: +row[5]||0, rtpa_inhos: +row[6]||0, dnt_inhos: +row[7]||0,
         sft: +row[8]||0, sft_inhos: +row[9]||0,
@@ -1878,17 +1880,53 @@ async function importFromGSheet(){
     localStorage.setItem('strokeData2', JSON.stringify(allData));
     renderEditTable();
     updateDashboard();
-    msg.innerHTML = `<span style="color:var(--green2)">✅ นำเข้าสำเร็จ ${count} แถว! รีเฟรชแดชบอร์ดแล้ว</span>`;
-  } catch(e){
-    // CORS error - แสดงวิธีแก้ไข
-    msg.innerHTML = `<div style="background:#FFEBEE;border-radius:8px;padding:10px;color:#C62828;font-size:12px">
-      ❌ CORS Error — ต้องแก้ GAS ก่อนครับ<br><br>
-      <strong>วิธีแก้:</strong><br>
-      1. เปิด Google Sheet → Extensions → Apps Script<br>
-      2. แทนที่โค้ดทั้งหมดด้วยโค้ดใหม่ด้านล่าง<br>
-      3. Deploy → Manage Deployments → Edit → Version: New → Deploy<br>
-      4. กลับมากด "ดึงข้อมูล" อีกครั้ง
-    </div>`;
+    msg.innerHTML = `<span style="color:var(--green2)">✅ นำเข้าสำเร็จ ${count} แถว!</span>`;
+  }
+
+  // วิธีที่ 1: fetch ปกติ (ใช้ได้บนคอม)
+  try{
+    const res = await fetch(url, {method:'GET', redirect:'follow'});
+    const raw = await res.json();
+    processData(raw);
+    return;
+  } catch(e1){
+    // วิธีที่ 2: JSONP — bypass CORS บนมือถือ
+    msg.innerHTML = '<span style="color:var(--blue)">⏳ กำลังดึงข้อมูล (mobile mode)...</span>';
+    try{
+      const cbName = 'gsCallback_' + Date.now();
+      const result = await new Promise((resolve, reject) => {
+        const timeout = setTimeout(()=>{
+          delete window[cbName];
+          const s = document.getElementById(cbName+'_script');
+          if(s) s.remove();
+          reject(new Error('timeout'));
+        }, 15000);
+        window[cbName] = function(data){
+          clearTimeout(timeout);
+          delete window[cbName];
+          resolve(data);
+        };
+        const script = document.createElement('script');
+        script.id = cbName+'_script';
+        script.src = url + '?callback=' + cbName;
+        script.onerror = ()=>{
+          clearTimeout(timeout);
+          reject(new Error('script error'));
+        };
+        document.head.appendChild(script);
+      });
+      processData(result);
+    } catch(e2){
+      // วิธีที่ 3: แนะนำ Export JSON จากคอม แล้วนำเข้าบนมือถือ
+      msg.innerHTML = `<div style="background:#FFF3E0;border-radius:8px;padding:12px;font-size:12px;color:#E65100">
+        <strong>⚠️ ไม่สามารถดึงข้อมูลผ่านมือถือโดยตรงได้</strong><br><br>
+        <strong style="color:#2E7D32">✅ วิธีง่ายที่สุดสำหรับมือถือ:</strong><br>
+        1. เปิด App บนคอม → กด <strong>💾 Export Backup JSON</strong><br>
+        2. ส่งไฟล์ .json มามือถือผ่าน LINE หรือ Email<br>
+        3. กดปุ่ม <strong>📂 เลือกไฟล์ JSON/CSV</strong> บนมือถือ<br>
+        4. เลือกไฟล์ → นำเข้าได้เลยครับ 😊
+      </div>`;
+    }
   }
 }
 
